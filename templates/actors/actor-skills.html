@@ -1,0 +1,55 @@
+  <div class="skill-section" ondragstart="return false;" ondrop="return false;">
+    <div id="basic-skills-list" class="skill-type">
+      <h3>Basic Skills</h3>
+      <div class="inventory-header item">
+        <div class="roll">Roll</div>
+        <div class="name">Name</div>
+        <div class="char">Attr</div>
+        <div class="adv">Adv</div>
+        <div class="spec">Specializations</div>
+      </div>
+
+      <ol class="inventory-list save-scroll">
+        {{#each actor.data.skills as |skill s|}}
+        <li class="item">
+          <div class="skill-roll"><button></button></div>
+          <h3 class="skill-name">{{skill.label}}</h3>
+          <h3 class="skill-char row-label">{{skill.attribute}}</h3>
+          <div class="basic-skill-adv input-field">
+            <input type="text" data-skill="{{s}}" data-dtype="Number" name="actor.data.skills.{{s}}.value" value="{{skill.value}}" />
+          </div>
+          <div class="basic-skill-spec input-field">
+            <input type="text" data-skill="{{s}}" data-dtype="String" name="actor.data.skills.{{s}}.specializations" value="{{skill.specializations}}" />
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+    </div>
+
+    <div id="advanced-skills-list" class="skill-type">
+      <h3>Advanced Skills</h3>
+      <div class="inventory-header item">
+        <div class="roll">Roll</div>
+        <div class="name">Name</div>
+        <div class="char">Attr</div>
+        <div class="adv">Adv</div>
+        <div class="spec">Specializations</div>
+      </div>
+
+      <ol class="inventory-list save-scroll">
+        {{#each actor.data.advancedSkills as |skill s|}}
+        <li class="item">
+          <div class="skill-roll"><button></button></div>
+          <h3 class="skill-name">{{skill.label}}</h3>
+          <h3 class="skill-char row-label">{{skill.attribute}}</h3>
+          <div class="skill-adv input-field">
+            <input type="text" data-skill="{{s}}" data-dtype="Number" name="actor.data.advancedSkills.{{s}}.value" value="{{skill.value}}" />
+          </div>
+          <div class="skill-spec input-field">
+            <input type="text" data-skill="{{s}}" data-dtype="String" name="actor.data.advancedSkills.{{s}}.specializations" value="{{skill.specializations}}" />
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+    </div>   
+  </div>

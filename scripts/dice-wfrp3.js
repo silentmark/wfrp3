@@ -265,34 +265,8 @@ class DiceWFRP
       rollResults.other.push(`${rollResults.woundsHealed} ${game.i18n.localize("Wounds Healed")}`)
     }
 
-    if (testData.hitLocation)
-    {
-      if (testData.hitloc)
-        rollResults.hitloc = WFRP_Tables.rollTable("hitloc",{lookup: testData.hitloc});
-      else
-        rollResults.hitloc = WFRP_Tables.rollTable("hitloc");
-
-      rollResults.hitloc.roll = eval(rollResults.hitloc.roll) // Cleaner number when editing chat card
-      rollResults.hitloc.description = game.i18n.localize(rollResults.hitloc.description)
-    }
-
-    // If hit location is being ussed, we can assume we should lookup critical hits
-    if (testData.hitLocation)
-    {
-      if (roll.total > targetNum && roll.total % 11 == 0 || roll.total == 100)
-      {
-        rollResults.extra.color_red = true;
-        rollResults.extra.fumble = game.i18n.localize("Fumble");
-      }
-      else if (roll.total <= targetNum && roll.total % 11 == 0)
-      {
-        rollResults.extra.color_green = true;
-        rollResults.extra.critical = game.i18n.localize("Critical");
-      }
-    }
-
     // If optional rule of criticals/fumbles on all tessts - assign Astounding Success/Failure accordingly
-    if (game.settings.get("wfrp3", "criticalsFumblesOnAllTests") && !testData.hitLocation)
+    if (game.settings.get("wfrp3", "criticalsFumblesOnAllTests"))
     {
       if (roll.total > targetNum && roll.total % 11 == 0 || roll.total == 100)
       {
@@ -830,17 +804,13 @@ class DiceWFRP
    */
   static async chatListeners(html)
   {
-    // item lookup tag looks for an item based on the location attribute (compendium), then posts that item to chat.
     html.on("click", ".item-lookup", async ev =>
     {
       let itemType = $(ev.currentTarget).attr("data-type");
-      let location = $(ev.currentTarget).attr("data-location");
       let name = $(ev.currentTarget).attr("data-name"); // Use name attribute if available, otherwis, use text clicked.
       let item;
       if (name)
-        item = await WFRP_Utility.findItem(name, itemType, location);
-      else if (location)
-        item = await WFRP_Utility.findItem(ev.currentTarget.text, itemType, location);
+        item = await WFRP_Utility.findItem(name, itemType);    
 
       if (!item)
         WFRP_Utility.findItem(ev.currentTarget.text, itemType).then(item => item.postItem());

@@ -2077,30 +2077,9 @@
       border-image-width: 59px;
       border-image-outset: 0px;
     }
-    .app.window-app.sheet.item-sheet.prayer-sheet {
-      border: 1px solid blue;
-      border-image: url(../ui/item-sheet-white.png);
-      border-image-slice: 59;
-      border-image-width: 59px;
-      border-image-outset: 0px;
-    }
     .app.window-app.sheet.item-sheet.psychology-sheet {
       border: 1px solid blue;
       border-image: url(../ui/item-sheet-black.png);
-      border-image-slice: 59;
-      border-image-width: 59px;
-      border-image-outset: 0px;
-    }
-    .app.window-app.sheet.item-sheet.skill-sheet {
-      border: 1px solid blue;
-      border-image: url(../ui/item-sheet-yellow.png);
-      border-image-slice: 59;
-      border-image-width: 59px;
-      border-image-outset: 0px;
-    }
-    .app.window-app.sheet.item-sheet.spell-sheet {
-      border: 1px solid blue;
-      border-image: url(../ui/item-sheet-purple.png);
       border-image-slice: 59;
       border-image-width: 59px;
       border-image-outset: 0px;
@@ -2566,39 +2545,68 @@
       filter: FlipH;
       -ms-filter: "FlipH";
     }
-  .app.window-app.sheet.item-sheet.career-sheet #characteristics-label {
-    height: auto;
-    padding-top: 10px;
-  }
-  .app.window-app.sheet.item-sheet.career-sheet #characteristics-table {
-    height: 100%;
-    border: 1px solid #736953a6;
-    border-left: none;
-    font-family: CaslonPro;
-    font-weight: 500;
-    font-size: 14px;
-    color: black;
-    padding: 0px;
-    margin: 0px 0px 0px 0px;
-    background: none;
-  }
-    .app.window-app.sheet.item-sheet.career-sheet #characteristics-table th {
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 5px;
+
+    .app.window-app.sheet.item-sheet.career-sheet .input-checkbox{
+      width: 100%;
+      top: 0;
+      height: 100%;
     }
-    .app.window-app.sheet.item-sheet.career-sheet #characteristics-table th label {
-      background: none;
+    
+    .app.window-app.sheet.item-sheet.career-sheet .state-value-box {
       border: none;
-      color: black;
+      border-top: 1px solid #736953a6;
+      height: 23px;
+      margin: 0px;
+      padding: 0px 0px 0px 0px;
+      font-family: var(--actor-input-font-family);
+      font-size: var(--actor-input-font-size);
+      font-weight: var(--actor-input-font-weight);
+      color: var(--actor-input-color);
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      /* box-shadow: 0 0 10px #00000052 inset; */
+      /* background: red; */
     }
-    .app.window-app.sheet.item-sheet.career-sheet .skills{
-      height: 100%      
+    .app.window-app.sheet.item-sheet.career-sheet .state-value-box .state-value {
+      width: inherit;
+      height: inherit;
+      margin: 0px 0px 0px 0px;
+      padding: 5px 0px 0px 0px;
+      text-align: center;
+      background: none;
     }
-
-
+    .app.window-app.sheet.item-sheet.career-sheet .state-value-box .state-first {
+        width: 100%;
+        height: 100%;
+        flex-grow: 1;
+        /* background: red; */
+      }
+      .app.window-app.sheet.item-sheet.career-sheet .state-value-box .divisor {
+        width: fit-content;
+        height: 22px;
+        padding: 5px 0px 0px 0px;
+        /* background: green; */
+      }
+      .app.window-app.sheet.item-sheet.career-sheet .state-value-box .state-second {
+        flex-grow: 1;
+        width: 100%;
+        height: 22px;
+        padding: 0px 0px 0px 0px;
+        /* background: blue; */
+      }
+      
+    .app.window-app.sheet.item-sheet.career-sheet .completition .input-checkbox{
+      width: 25%;
+      top: 0;
+      height: 100%;
+      text-align: center;
+    } 
+    
+    .app.window-app.sheet.item-sheet.career-sheet .completition .input-text{
+      width: 70%;
+      display: inline-block;
+    }
 
 /* ==================== (C) DISEASES ========================== */
   .app.window-app.sheet.item-sheet.disease-sheet .sheet-tabs {
@@ -3018,113 +3026,6 @@
       font-family: WFRP3 Symbols;
     }
 
-/* ==================== (H) PRAYER ============================ */
-  .app.window-app.sheet.item-sheet.prayer-sheet {
-    /* font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700; */
-    margin: -29px 0px 0px 0px;
-    height: 26px;
-    /* position: relative; */
-  }
-  .app.window-app.sheet.item-sheet.prayer-sheet .sheet-tabs {
-    font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700;
-    margin: -21px 0px 0px 0px;
-    height: 26px;
-    position: relative;
-  } 
-    .app.window-app.sheet.item-sheet.prayer-sheet .sheet-tabs.edges.left {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      left: 59px;
-      z-index: 101;
-    }
-    .app.window-app.sheet.item-sheet.prayer-sheet .sheet-tabs.edges.right {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      right: 59px;
-      z-index: 101;
-      -moz-transform: scaleX(-1);
-      -o-transform: scaleX(-1);
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-      filter: FlipH;
-      -ms-filter: "FlipH";
-    }
-  .app.window-app.sheet.item-sheet.prayer-sheet .form-group {
-    clear: both;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 6px 5px 0px 0px;
-  }
-    .app.window-app.sheet.item-sheet.prayer-sheet .label-text {
-      font-family: CaslonAntique;
-      font-weight: 700;
-      font-size: 16px;
-      color: #464331c4;
-      text-align: center;
-      border: 1px solid #736953a6;
-      margin: 0px;
-      height: 25px;
-      box-shadow: 0 0 10px #00000052 inset;
-      padding: 1px 3px 0px 3px;
-      vertical-align: top;
-      flex-grow: 2;
-    }
-    .app.window-app.sheet.item-sheet.prayer-sheet .input-box {
-      height: 25px;
-      border: 1px solid #736953a6;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 0px;
-      margin-right: 0px;
-      width: 45px;
-      position: relative;
-      left: 0px;
-    }
-    .app.window-app.sheet.item-sheet.prayer-sheet .input-text {
-      height: 23px;
-      border: 1px solid #73695300;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 7px;
-      margin-right: 6px;
-      position: relative;
-      left: 0px;
-      vertical-align: top;
-      text-align: center;
-      flex: 3;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      background: none;
-      padding-left: 3px;
-      padding-right: 3px;
-    }
-    .app.window-app.sheet.item-sheet.prayer-sheet .input-text:hover {
-    border: 1px dotted #463a3a;
-    box-shadow: none;
-    }
-
 /* ==================== (I) PSYCHOLOGY ======================== */
   .app.window-app.sheet.item-sheet.psychology-sheet .sheet-tabs {
     font-family: CaslonAntique;
@@ -3135,222 +3036,6 @@
     position: relative;
   }
 
-/* ==================== (J) SKILL ============================= */
-  .app.window-app.sheet.item-sheet.skill-sheet {
-    /* font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700; */
-    margin: -29px 0px 0px 0px;
-    height: 26px;
-    /* position: relative; */
-  }
-  .app.window-app.sheet.item-sheet.skill-sheet .sheet-tabs {
-    font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700;
-    margin: -29px 0px 0px 0px;
-    height: 26px;
-    position: relative;
-  } 
-    .app.window-app.sheet.item-sheet.skill-sheet .sheet-tabs.edges.left {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      left: 59px;
-      z-index: 101;
-    }
-    .app.window-app.sheet.item-sheet.skill-sheet .sheet-tabs.edges.right {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      right: 59px;
-      z-index: 101;
-      -moz-transform: scaleX(-1);
-      -o-transform: scaleX(-1);
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-      filter: FlipH;
-      -ms-filter: "FlipH";
-    }
-  .app.window-app.sheet.item-sheet.skill-sheet .form-group {
-    clear: both;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 6px 5px 0px 0px;
-  }
-    .app.window-app.sheet.item-sheet.skill-sheet .label-text {
-      font-family: CaslonAntique;
-      font-weight: 700;
-      font-size: 16px;
-      color: #464331c4;
-      text-align: center;
-      border: 1px solid #736953a6;
-      margin: 0px;
-      height: 25px;
-      box-shadow: 0 0 10px #00000052 inset;
-      padding: 1px 3px 0px 3px;
-      vertical-align: top;
-      flex-grow: 2;
-    }
-    .app.window-app.sheet.item-sheet.skill-sheet .input-box {
-      height: 25px;
-      border: 1px solid #736953a6;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 0px;
-      margin-right: 0px;
-      width: 45px;
-      position: relative;
-      left: 0px;
-    }
-    .app.window-app.sheet.item-sheet.skill-sheet .input-text {
-      height: 23px;
-      border: 1px solid #73695300;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 7px;
-      margin-right: 6px;
-      position: relative;
-      left: 0px;
-      vertical-align: top;
-      text-align: center;
-      flex: 3;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      background: none;
-      padding-left: 3px;
-      padding-right: 3px;
-    }
-    .app.window-app.sheet.item-sheet.skill-sheet .input-text:hover {
-    border: 1px dotted #463a3a;
-    box-shadow: none;
-    }
-
-/* ==================== (K) SPELL ============================= */
-  .app.window-app.sheet.item-sheet.spell-sheet {
-    /* font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700; */
-    margin: -29px 0px 0px 0px;
-    height: 26px;
-    /* position: relative; */
-  }
-  .app.window-app.sheet.item-sheet.spell-sheet .sheet-tabs {
-    font-family: CaslonAntique;
-    font-size: 16px;
-    font-weight: 700;
-    margin: -29px 0px 0px 0px;
-    height: 26px;
-    position: relative;
-  } 
-    .app.window-app.sheet.item-sheet.spell-sheet .sheet-tabs.edges.left {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      left: 59px;
-      z-index: 101;
-    }
-    .app.window-app.sheet.item-sheet.spell-sheet .sheet-tabs.edges.right {
-      margin: 0px;
-      height: 25px;
-      width: 7px;
-      background: url(../ui/item-sheet-tab-edges.png) repeat;
-      background-position-x: right;
-      position: absolute;
-      top: 161px;
-      right: 59px;
-      z-index: 101;
-      -moz-transform: scaleX(-1);
-      -o-transform: scaleX(-1);
-      -webkit-transform: scaleX(-1);
-      transform: scaleX(-1);
-      filter: FlipH;
-      -ms-filter: "FlipH";
-    }
-  .app.window-app.sheet.item-sheet.spell-sheet .form-group {
-    clear: both;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 6px 5px 0px 0px;
-  }
-    .app.window-app.sheet.item-sheet.spell-sheet .label-text {
-      font-family: CaslonAntique;
-      font-weight: 700;
-      font-size: 16px;
-      color: #464331c4;
-      text-align: center;
-      border: 1px solid #736953a6;
-      margin: 0px;
-      height: 25px;
-      box-shadow: 0 0 10px #00000052 inset;
-      padding: 1px 3px 0px 3px;
-      vertical-align: top;
-      flex-grow: 2;
-    }
-    .app.window-app.sheet.item-sheet.spell-sheet .input-box {
-      height: 25px;
-      border: 1px solid #736953a6;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 0px;
-      margin-right: 0px;
-      width: 45px;
-      position: relative;
-      left: 0px;
-    }
-    .app.window-app.sheet.item-sheet.spell-sheet .input-text {
-      height: 23px;
-      border: 1px solid #73695300;
-      border-left: none;
-      font-family: CaslonPro;
-      font-weight: 500;
-      font-size: 14px;
-      color: black;
-      padding-top: 7px;
-      margin-right: 6px;
-      position: relative;
-      left: 0px;
-      vertical-align: top;
-      text-align: center;
-      flex: 3;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      background: none;
-      padding-left: 3px;
-      padding-right: 3px;
-    }
-    .app.window-app.sheet.item-sheet.spell-sheet .input-text:hover {
-    border: 1px dotted #463a3a;
-    box-shadow: none;
-    }
-
-
-      
 /* ==================== (L) SIDEBAR CHAT FORM ================= */
 
 /******************************************************************/
@@ -12770,18 +12455,6 @@ border-image-outset: 0px !important;
       text-overflow: ellipsis;
     }
     
-
-  .window-app.dialog.characteristic-roll-dialog input[name="hitLocation"],
-  .window-app.dialog.skill-roll-dialog input[name="hitLocation"],
-  .window-app.dialog.weapon-roll-dialog input[name="hitLocation"],
-  .window-app.dialog.spell-roll-dialog input[name="hitLocation"],
-  .window-app.dialog.channel-roll-dialog input[name="hitLocation"],
-  .window-app.dialog.prayer-roll-dialog input[name="hitLocation"] {
-    position: relative;
-    top: 4px;
-    left: 2px;
-    transform: scale(1.0);
-  }
   .window-app.dialog.characteristic-roll-dialog .dialog-buttons button,
   .window-app.dialog.skill-roll-dialog .dialog-buttons button,
   .window-app.dialog.weapon-roll-dialog .dialog-buttons button,
@@ -15721,46 +15394,6 @@ a.item-control.item-delete {
   border: none;
   margin: 0px 4px 0px 0px;
   background: none;
-}
-
-.armour-box[data-location="head"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="body"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="lArm"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="rArm"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="lLeg"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="rLeg"] .armour-property .armour-quality.comma:last-of-type {
-  display: none;
-}
-
-
-
-.armour-box[data-location="head"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="body"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
-}
-our-box[data-location="lArm"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="rArm"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="lLeg"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
-}
-.armour-box[data-location="rLeg"] .armour-property .armour-flaw.comma:last-of-type {
-  display: none;
 }
 
 #chat-log .message.whisper {

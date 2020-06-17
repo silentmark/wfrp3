@@ -10,10 +10,11 @@
     </div>
   </div>
 
-
   <nav class="sheet-tabs tabs" data-tab-container="primary">
     <a class="item active" data-tab="description">{{localize "Description"}}</a>
     <a class="item" data-tab="details">{{localize "Details"}}</a>
+    <a class="item" data-tab="advances">Advances</a>
+    <a class="item" data-tab="completition">Completition</a>
   </nav>
   <div class="sheet-tabs edges left"></div>
   <div class="sheet-tabs edges right"></div>
@@ -23,103 +24,215 @@
   {{> systems/wfrp3/templates/items/item-description.html}}
 
   <div class="tab details" data-tab="details">
+
     <div class="form-group">
-      <label class="label-text">{{localize "Class"}}</label>
+      <label class="label-text">Basic</label>
       <div class="input-box">
-        <input class="input-text" type="text" name="data.class.value" value="{{data.class.value}}"
-          data-dtype="{{data.class.type}}" />
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.basic.value" {{checked data.basic.value}}></input>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="label-text">{{localize "Career Group"}}</label>
+      <label class="label-text">Races</label>
       <div class="input-box">
-        <input class="input-text" type="text" name="data.careergroup.value" value="{{data.careergroup.value}}"
-          data-dtype="{{data.careergroup.type}}" />
+        <input class="input-text csv-input" data-dest="races" name="data.races" value="{{data.races}}" type="text" data-dtype="String" />
       </div>
     </div>
 
     <div class="form-group">
-      <label class="label-text">{{localize "Career Level"}}</label>
-      <select name="data.level.value" data-dtype="{{data.level.type}}">
-        {{#select data.level.value}}
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        {{/select}}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="label-text">{{localize "Status Tier"}}</label>
-      <select name="data.status.tier" data-dtype="String">
-        {{#select data.status.tier}}
-        <option value=""></option>
-        {{#each statusTiers as |t tier|}}
-        <option value="{{tier}}">{{t}}</option>
-        {{/each}}
-        {{/select}}
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="label-text">{{localize "Status Standing"}}</label>
+      <label class="label-text">Traits</label>
       <div class="input-box">
-        <input class="input-text" type="text" name="data.status.standing" value="{{data.status.standing}}"
-          data-dtype="Number" />
+        <input class="input-text csv-input" data-dest="traits" name="data.traits" value="{{data.traits}}" type="text" data-dtype="String" />
       </div>
     </div>
 
-
     <div class="form-group">
-      <label class="label-text" id="characteristics-label">{{localize "Characteristics"}}</label>
-      <table id="characteristics-table">
-        {{#each characteristicList as |charValue charIndex|}}
-        <th class="characteristics-box">
-          <label class="label-text-char">{{charValue.abrev}}</label>
-          {{#if charValue.checked}}
-          <a class="char-checkbox" name={{charIndex}}><i class="far fa-check-circle"></i></a>
-          {{else}}
-          <a class="char-checkbox" name={{charIndex}}><i class="far fa-circle"></i></a>
-          {{/if}}
-        </th>
-        {{/each}}
-      </table>
-    </div>
-
-    <div class="form-group skills">
-      <label class="label-text skills-textarea">{{localize "Skills"}}</label>
-      <div class="input-box skills-textarea">
-        <textarea class="input-text csv-input" data-dest="skills" type="text" data-dtype="String">{{skills}}</textarea>
-      </div>
-    </div>
-
-
-    <div class="form-group">
-      <label class="label-text">{{localize "Earning Skill"}}</label>
+      <label class="label-text">Characteristics</label>
       <div class="input-box">
-        <input class="input-text csv-input" data-dest="earning" value="{{earningSkills}}" type="text"
-          data-dtype="String" />
+        <input class="input-text csv-input" data-dest="primaryAttributes" name="data.primaryAttributes" value="{{data.primaryAttributes}}" type="text" data-dtype="String" />
       </div>
     </div>
-
 
     <div class="form-group">
-      <label class="label-text">{{localize "Talents"}}</label>
+      <label class="label-text">Skills</label>
       <div class="input-box">
-        <input class="input-text csv-input" data-dest="talents" value="{{talents}}" type="text" data-dtype="String" />
+        <input class="input-text csv-input" data-dest="skills" name="data.skills" value="{{data.skills}}" type="text" data-dtype="String" />
       </div>
     </div>
-
 
     <div class="form-group">
-      <label class="label-text">{{localize "Trappings"}}</label>
+      <label class="label-text">Talent Slots</label>
       <div class="input-box">
-        <input class="input-text csv-input" data-dest="trappings" value="{{trappings}}" type="text"
-          data-dtype="String" />
+        <input class="input-text csv-input" data-dest="talentSlots" name="data.talentSlots" value="{{data.talentSlots}}" type="text"  data-dtype="String" />
       </div>
     </div>
+
+   <div class="form-group">
+      <label class="label-text">Stances</label>
+      <div class="input-box">
+        <div class="state-value-box">
+          <div class="state-first">
+            <input class="state-value" style="color: red;" type="text" name="data.stance.reckless" value="{{data.stance.reckless}}" data-dtype="Number">
+          </div>
+          <div class="divisor">
+            /
+          </div>
+          <div class="state-second">
+            <input class="state-value" style="color: green;" type="text" name="data.stance.conservative" value="{{data.stance.conservative}}" data-dtype="Number">
+          </div>
+        </div>
+      </div>
+    </div>    
+  </div>
+  <div class="tab advances" data-tab="advances">
+    <div class="form-group">
+      <label class="label-text">Action</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.action" value="{{data.advances.action}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Talent</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.talent" value="{{data.advances.talent}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Skill</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.skill" value="{{data.advances.skill}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Fortune</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.fortune" value="{{data.advances.fortune}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Conservative</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.conservative" value="{{data.advances.conservative}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Reckless</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.reckless" value="{{data.advances.reckless}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Wound</label>
+      <div class="input-box">
+        <input class="input-text" name="data.advances.wound" value="{{data.advances.wound}}" type="text" data-dtype="Number" />
+      </div>
+    </div>
+  </div>
+
+
+  
+  <div class="tab completition" data-tab="completition">
+    <div class="form-group">
+      <label class="label-text">Action</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.action.taken" {{checked data.experience.action.taken}}></input>
+        <input class="input-text" name="data.experience.action.name" value="{{data.experience.action.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Talent</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.talent.taken" {{checked data.experience.talent.taken}}></input>
+        <input class="input-text" name="data.experience.talent.name" value="{{data.experience.talent.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Skill</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.skill.taken" {{checked data.experience.skill.taken}}></input>
+        <input class="input-text" name="data.experience.skill.name" value="{{data.experience.skill.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Wound</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.wound.taken" {{checked data.experience.wound.taken}}></input>
+        <input class="input-text" name="data.experience.wound.name" value="{{data.experience.wound.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open1.taken" {{checked data.experience.open1.taken}}></input>
+        <input class="input-text" name="data.experience.open1.name" value="{{data.experience.open1.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open2.taken" {{checked data.experience.open2.taken}}></input>
+        <input class="input-text" name="data.experience.open2.name" value="{{data.experience.open2.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open3.taken" {{checked data.experience.open3.taken}}></input>
+        <input class="input-text" name="data.experience.open3.name" value="{{data.experience.open3.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open4.taken" {{checked data.experience.open4.taken}}></input>
+        <input class="input-text" name="data.experience.open4.name" value="{{data.experience.open4.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open5.taken" {{checked data.experience.open5.taken}}></input>
+        <input class="input-text" name="data.experience.open5.name" value="{{data.experience.open5.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Open Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.open6.taken" {{checked data.experience.open6.taken}}></input>
+        <input class="input-text" name="data.experience.open6.name" value="{{data.experience.open6.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label class="label-text">Non-Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Number" type="text" name="data.experience.nonCareer1.taken" value={{data.experience.nonCareer1.taken}}></input>
+        <input class="input-text" name="data.experience.nonCareer1.name" value="{{data.experience.nonCareer1.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Non-Career Advance</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Number" type="text" name="data.experience.nonCareer2.taken" value={{data.experience.nonCareer2.taken}}></input>
+        <input class="input-text" name="data.experience.nonCareer2.name" value="{{data.experience.nonCareer2.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Transition</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Number" type="text" name="data.experience.transition.taken" value={{data.experience.transition.taken}}></input>
+        <input class="input-text" name="data.experience.transition.name" value="{{data.experience.transition.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label-text">Dedication</label>
+      <div class="input-box">
+        <input class="input-checkbox" data-dtype="Boolean" type="checkbox" name="data.experience.dedication.taken" {{checked data.experience.dedication.taken}}></input>
+        <input class="input-text" name="data.experience.dedication.name" value="{{data.experience.dedication.name}}" type="text" data-dtype="String" />
+      </div>
+    </div>
+
   </div>
   </section>
 </form>
@@ -131,15 +244,10 @@
   for (i = 0; i < length; i++) {
     if (textContainer[i].children[1].children[0].className.includes("item-sheet")) {
       new_red = document.getElementsByClassName("app window-app sheet")[i].id;
-      
-      
       if (document.getElementById(new_red).className.includes("career-sheet")) {
         continue;
       } 
       else if (document.getElementById(new_red).className.includes("ammo-sheet")) {
-        continue;
-      } 
-      else if (document.getElementById(new_red).className.includes("consumable-sheet")) {
         continue;
       } 
       else if (document.getElementById(new_red).className.includes("container-sheet")) {
@@ -157,16 +265,7 @@
       else if (document.getElementById(new_red).className.includes("mutation-sheet")) {
         continue;
       } 
-      else if (document.getElementById(new_red).className.includes("prayer-sheet")) {
-        continue;
-      } 
       else if (document.getElementById(new_red).className.includes("psychology-sheet")) {
-        continue;
-      } 
-      else if (document.getElementById(new_red).className.includes("skill-sheet")) {
-        continue;
-      } 
-      else if (document.getElementById(new_red).className.includes("spell-sheet")) {
         continue;
       } 
       else if (document.getElementById(new_red).className.includes("talent-sheet")) {

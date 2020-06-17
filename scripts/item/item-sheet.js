@@ -77,94 +77,31 @@ class ItemSheetwfrp3 extends ItemSheet
   {
     const data = super.getData();
 
-    if (this.item.type === "skill")
-    {
-      data['characteristics'] = wfrp3.characteristics;
-      data['skillGroup'] = wfrp3.skillGroup;
-      data['skillTypes'] = wfrp3.skillTypes;
-    }
-    else if (this.item.type === "talent")
-    {
-      data['talentMaxs'] = wfrp3.talentMax;
-    }
-    else if (this.item.type == "weapon")
+    if (this.item.type == "weapon")
     {
       data['weaponGroups'] = wfrp3.weaponGroups;
       data['availability'] = wfrp3.availability;
-      data['weaponReaches'] = wfrp3.weaponReaches
+      data['weaponReaches'] = wfrp3.weaponReaches;
       data['ammunitionGroups'] = wfrp3.ammunitionGroups;
       data['weaponTypes'] = wfrp3.weaponTypes;
+      data['craftsmanship'] = wfrp3.craftsmanship;
       data.isMelee = wfrp3.groupToType[this.item.data.data.weaponGroup.value] == "melee"
-    }
-    else if (this.item.type == "ammunition")
-    {
-      data['availability'] = wfrp3.availability;
-      data['ammunitionGroups'] = wfrp3.ammunitionGroups;
     }
     else if (this.item.type == "armour")
     {
-      data['armorTypes'] = wfrp3.armorTypes;
-      data['availability'] = wfrp3.availability;
+      data['availability'] = wfrp3.availability;      
+      data['craftsmanship'] = wfrp3.craftsmanship;
     }
-    else if (this.item.type == "spell")
-    {
-      if (wfrp3.magicLores[this.item.data.data.lore.value])
-      {
-        data["loreValue"] = wfrp3.magicLores[this.item.data.data.lore.value]
-      }
-      else
-      {
-        data["loreValue"] = this.item.data.data.lore.value;
-      }
-      data["descriptionAndLore"] = WFRP_Utility._spellDescription(this.item.data)
-
-    }
-    else if (this.item.type == "prayer")
-    {
-      data['prayerTypes'] = wfrp3.prayerTypes;
-    }
-
-
     else if (this.item.type == "career")
     {
-      data['statusTiers'] = wfrp3.statusTiers;
-      data['skills'] = data.data.skills.join(", ").toString();
-      data['earningSkills'] = data.data.incomeSkill.map(function (item)
-      {
-        return data.data.skills[item];
-      });
-      data['talents'] = data.data.talents.toString();
-      data['trappings'] = data.data.trappings.toString();
-      let characteristicList = duplicate(wfrp3.characteristicsAbbrev);
-      for (let char in characteristicList)
-      {
-        if (data.data.characteristics.includes(char))
-          characteristicList[char] = {
-            abrev: wfrp3.characteristicsAbbrev[char],
-            checked: true
-          };
-        else
-          characteristicList[char] = {
-            abrev: wfrp3.characteristicsAbbrev[char],
-            checked: false
-          };
-      }
-      data['characteristicList'] = characteristicList;
-
+      //TODO:
     }
-
     else if (this.item.type == "trapping")
     {
       data['trappingTypes'] = wfrp3.trappingTypes;
       data['availability'] = wfrp3.availability;
+      data['craftsmanship'] = wfrp3.craftsmanship;
     }
-
-    else if (this.item.type == "trait")
-    {
-      data['characteristics'] = wfrp3.characteristics;
-      data['difficultyLabels'] = wfrp3.difficultyLabels;
-    }
-
     else if (this.item.type == "container")
     {
       data['availability'] = wfrp3.availability;
@@ -268,25 +205,6 @@ class ItemSheetwfrp3 extends ItemSheet
             }
             break;
 
-            // find the indices of the skills that match the earning skill input, send those
-            // values to data.incomeSkill
-          case 'earning':
-            {
-              this.item.update({'data.incomeSkill': []});
-              let earningSkills = [];
-              for (let sk in list)
-              {
-                let skillIndex = this.item.data.data.skills.indexOf(list[Number(sk)])
-
-                if (skillIndex == -1)
-                  continue;
-                else
-                  earningSkills.push(skillIndex);
-
-              }
-              await this.item.update({'data.incomeSkill': earningSkills});
-            }
-            break;
           case 'talents':
             {
               await this.item.update({'data.talents': list});
@@ -298,51 +216,7 @@ class ItemSheetwfrp3 extends ItemSheet
               await this.item.update({'data.trappings': list});
             }
             break;
-
         }
-      });
-
-
-    // If the user changes a grouped skill that is in their current career,
-    // offer to propagate that change to the career as well.
-    html.on("change", ".item-name", ev => {
-      if (this.item.type != "skill" || !this.item.actor || this.item.data.data.grouped.value != "isSpec")
-        return;
-      // If no change
-      if (ev.target.value == this.item.name)
-        return
-      
-      let currentCareer = duplicate(this.item.actor.data.items.filter(i => i.type == "career").find(i => i.data.current.value));
-
-      // If career has the skill that was changed, change the name in the career
-      if(currentCareer && currentCareer.data.skills.includes(this.item.name))
-        currentCareer.data.skills[currentCareer.data.skills.indexOf(this.item.name)] = ev.target.value;
-      else // if it doesn't, return
-        return;
-      
-      let oldName = this.item.name
-
-      // Ask the user to confirm the change
-      new Dialog({
-          title : game.i18n.localize("SHEET.CareerSkill"),
-          content: `<p>${game.i18n.localize("SHEET.CareerSkillPrompt")}</p>`,
-          buttons: {
-            yes: {
-              label: "Yes",
-              callback: async dlg => {
-                ui.notifications.notify(`Changing ${oldName} to ${ev.target.value} in ${currentCareer.name}`)
-                this.item.actor.updateEmbeddedEntity("OwnedItem", currentCareer)
-              }
-            },
-            no: {
-              label: "No",
-              callback: async dlg => {
-                return;
-              }
-            },
-          },
-          default: 'yes'
-        }).render(true);
       });
 
     // Support custom entity links

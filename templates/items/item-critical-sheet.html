@@ -24,23 +24,16 @@
   <div class="tab details" data-tab="details">
 
     <div class="form-group">
-      <label class="label-text">{{localize "Wounds"}}</label>
+      <label class="label-text">Severity</label>
       <div class="input-box">
-        <input class="input-text" type="text" name="data.wounds.value" value="{{data.wounds.value}}" data-dtype="{{data.wounds.type}}" />
+        <input class="input-text" type="text" name="data.severity.value" value="{{data.severity.value}}" data-dtype="{{data.severity.type}}" />
       </div>
     </div>
 
     <div class="form-group">
-      <label class="label-text">{{localize "Location"}}</label>
+      <label class="label-text">Location</label>
       <div class="input-box">
         <input class="input-text" type="text" name="data.location.value" value="{{data.location.value}}" data-dtype="{{data.location.type}}" />
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="label-text">{{localize "Modifier"}}</label>
-      <div class="input-box">
-        <input class="input-text" type="text" name="data.modifier.value" value="{{data.modifier.value}}" data-dtype="{{data.modifier.type}}" />
       </div>
     </div>
 
@@ -55,15 +48,10 @@
     for (i = 0; i < length; i++) {
       if (textContainer[i].children[1].children[0].className.includes("item-sheet")) {
         new_red = document.getElementsByClassName("app window-app sheet")[i].id;
-        
-        
         if (document.getElementById(new_red).className.includes("career-sheet")) {
           continue;
         } 
         else if (document.getElementById(new_red).className.includes("ammo-sheet")) {
-          continue;
-        } 
-        else if (document.getElementById(new_red).className.includes("consumable-sheet")) {
           continue;
         } 
         else if (document.getElementById(new_red).className.includes("container-sheet")) {
@@ -81,18 +69,9 @@
         else if (document.getElementById(new_red).className.includes("mutation-sheet")) {
           continue;
         } 
-        else if (document.getElementById(new_red).className.includes("prayer-sheet")) {
-          continue;
-        } 
         else if (document.getElementById(new_red).className.includes("psychology-sheet")) {
           continue;
-        } 
-        else if (document.getElementById(new_red).className.includes("skill-sheet")) {
-          continue;
-        } 
-        else if (document.getElementById(new_red).className.includes("spell-sheet")) {
-          continue;
-        } 
+        }
         else if (document.getElementById(new_red).className.includes("talent-sheet")) {
           continue;
         } 

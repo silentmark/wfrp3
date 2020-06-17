@@ -124,354 +124,25 @@ wfrp3.species = {
     "halfling": "Halfling",
     "helf": "High Elf",
     "welf": "Wood Elf",
+    "ogre": "Ogre"
 };
-
-wfrp3.speciesCharacteristics = {
-    "human": {
-        "ws": "2d10+20",
-        "bs": "2d10+20",
-        "s": "2d10+20",
-        "t": "2d10+20",
-        "i": "2d10+20",
-        "ag": "2d10+20",
-        "dex": "2d10+20",
-        "int": "2d10+20",
-        "wp": "2d10+20",
-        "fel": "2d10+20"
-    },
-    "dwarf": {
-        "ws": "2d10+30",
-        "bs": "2d10+20",
-        "s": "2d10+20",
-        "t": "2d10+30",
-        "i": "2d10+20",
-        "ag": "2d10+10",
-        "dex": "2d10+30",
-        "int": "2d10+20",
-        "wp": "2d10+40",
-        "fel": "2d10+10"
-    },
-    "halfling": {
-        "ws": "2d10+10",
-        "bs": "2d10+30",
-        "s": "2d10+10",
-        "t": "2d10+20",
-        "i": "2d10+20",
-        "ag": "2d10+20",
-        "dex": "2d10+30",
-        "int": "2d10+20",
-        "wp": "2d10+30",
-        "fel": "2d10+30"
-    },
-    "helf": {
-        "ws": "2d10+30",
-        "bs": "2d10+30",
-        "s": "2d10+20",
-        "t": "2d10+20",
-        "i": "2d10+40",
-        "ag": "2d10+30",
-        "dex": "2d10+30",
-        "int": "2d10+30",
-        "wp": "2d10+30",
-        "fel": "2d10+20"
-    },
-    "welf": {
-        "ws": "2d10+30",
-        "bs": "2d10+30",
-        "s": "2d10+20",
-        "t": "2d10+20",
-        "i": "2d10+40",
-        "ag": "2d10+30",
-        "dex": "2d10+30",
-        "int": "2d10+30",
-        "wp": "2d10+30",
-        "fel": "2d10+20"
-    },
-
-}
-
-wfrp3.speciesSkills = {
-    "human": [
-        "Animal Care",
-        "Charm",
-        "Cool",
-        "Evaluate",
-        "Gossip",
-        "Haggle",
-        "Language (Bretonnian)",
-        "Language (Wastelander)",
-        "Leadership",
-        "Lore (Reikland)",
-        "Melee (Basic)",
-        "Ranged (Bow)"
-    ],
-    "dwarf": [
-        "Consume Alcohol",
-        "Cool",
-        "Endurance",
-        "Entertain (Storytelling)",
-        "Evaluate",
-        "Intimidate",
-        "Language (Khazalid)",
-        "Lore (Dwarfs)",
-        "Lore (Geology)",
-        "Lore (Metallurgy)",
-        "Melee (Basic)",
-        "Trade (any one)"
-    ],
-    "halfling": [
-        "Charm",
-        "Consume Alcohol",
-        "Dodge",
-        "Gamble",
-        "Haggle",
-        "Intuition",
-        "Language (Mootish)",
-        "Lore (Reikland)",
-        "Perception",
-        "Sleight of Hand",
-        "Stealth (Any)",
-        "Trade (Cook)"
-    ],
-    "helf": [
-        "Cool",
-        "Entertain (Sing)",
-        "Evaluate",
-        "Language (Eltharin)",
-        "Leadership",
-        "Melee (Basic)",
-        "Navigation",
-        "Perception",
-        "Play (any one)",
-        "Ranged (Bow)",
-        "Sail",
-        "Swim"
-    ],
-    "welf": [
-        "Athletics",
-        "Climb",
-        "Endurance",
-        "Entertain (Sing)",
-        "Intimidate",
-        "Language (Eltharin)",
-        "Melee (Basic)",
-        "Outdoor Survival",
-        "Perception",
-        "Ranged (Bow)",
-        "Stealth (Rural)",
-        "Track"
-    ],
-}
-
-wfrp3.speciesTalents = {
-    "human": [
-        "Doomed",
-        "Savvy, Suave",
-        3
-    ],
-    "dwarf": [
-        "Magic Resistance",
-        "Night Vision",
-        "Read/Write, Relentless",
-        "Resolute, Strong-minded",
-        "Sturdy",
-        0
-    ],
-    "halfling": [
-        "Acute Sense (Taste)",
-        "Night Vision",
-        "Resistance (Chaos)",
-        "Small",
-        0
-    ],
-    "helf": [
-        "Acute Sense (Sight)",
-        "Coolheaded, Savvy",
-        "Night Vision",
-        "Second Sight, Sixth Sense",
-        "Read/Write",
-        0
-    ],
-    "welf": [
-        "Acute Sense (Sight)",
-        "Hardy, Second Sight",
-        "Night Vision",
-        "Second Sight, Sixth Sense",
-        "Read/Write",
-        0
-    ],
-}
-
-wfrp3.speciesMovement = {
-    "human": 4,
-    "dwarf": 3,
-    "halfling": 3,
-    "helf": 5,
-    "welf": 5
-}
-
-wfrp3.speciesFate = {
-    "human": 2,
-    "dwarf": 0,
-    "halfling": 0,
-    "helf": 0,
-    "welf": 0
-}
-
-wfrp3.speciesRes = {
-    "human": 1,
-    "dwarf": 2,
-    "halfling": 2,
-    "helf": 0,
-    "welf": 0
-}
-
-wfrp3.speciesExtra = {
-    "human": 3,
-    "dwarf": 2,
-    "halfling": 3,
-    "helf": 2,
-    "welf": 2
-}
-
-wfrp3.speciesAge = {
-    "human": "15+1d10",
-    "dwarf": "15+10d10",
-    "halfling": "15+5d10",
-    "helf": "30+10d10",
-    "welf": "30+10d10"
-}
-
-wfrp3.speciesHeight = {
-    "human": {
-        feet: 4,
-        inches: 9,
-        die: "2d10"
-    },
-    "dwarf": {
-        feet: 4,
-        inches: 3,
-        die: "1d10"
-    },
-    "halfling": {
-        feet: 3,
-        inches: 1,
-        die: "1d10"
-    },
-    "helf": {
-        feet: 5,
-        inches: 11,
-        die: "1d10"
-    },
-    "welf": {
-        feet: 5,
-        inches: 11,
-        die: "1d10"
-    }
-}
-
-wfrp3.classTrappings = {
-    "Academics": "ClassTrappings.Academics",
-    "Burghers": "ClassTrappings.Burghers",
-    "Courtiers": "ClassTrappings.Courtiers",
-    "Peasants": "ClassTrappings.Peasants",
-    "Rangers": "ClassTrappings.Rangers",
-    "Riverfolk": "ClassTrappings.Riverfolk",
-    "Rogues": "ClassTrappings.Rogues",
-    "Warriors": "ClassTrappings.Warriors",
-}
-
-wfrp3.creditOptions = {
-    SPLIT : "split",
-    EACH : "each",
-
-}
-
-// Status Tiers
-wfrp3.statusTiers = {
-    "g": "TIER.Gold",
-    "s": "TIER.Silver",
-    "b": "TIER.Brass"
-};
-
-// Characteristic Names
-wfrp3.characteristics = {
-    "ws": "CHAR.WS",
-    "bs": "CHAR.BS",
-    "s": "CHAR.S",
-    "t": "CHAR.T",
-    "i": "CHAR.I",
-    "ag": "CHAR.Ag",
-    "dex": "CHAR.Dex",
-    "int": "CHAR.Int",
-    "wp": "CHAR.WP",
-    "fel": "CHAR.Fel"
-};
-
-// Characteristic Abbreviations
-wfrp3.characteristicsAbbrev = {
-    "ws": "CHARAbbrev.WS",
-    "bs": "CHARAbbrev.BS",
-    "s": "CHARAbbrev.S",
-    "t": "CHARAbbrev.T",
-    "i": "CHARAbbrev.I",
-    "ag": "CHARAbbrev.Ag",
-    "dex": "CHARAbbrev.Dex",
-    "int": "CHARAbbrev.Int",
-    "wp": "CHARAbbrev.WP",
-    "fel": "CHARAbbrev.Fel"
-};
-
-wfrp3.skillTypes = {
-    "bsc": "Basic",
-    "adv": "Advanced"
-};
-
-wfrp3.xpCost = {
-    "characteristic": [25, 30, 40, 50, 70, 90, 120, 150, 190, 230, 280, 330, 390, 450, 520],
-    "skill": [10, 15, 20, 30, 40, 60, 80, 110, 140, 180, 220, 270, 320, 380, 440]
-}
-
-wfrp3.skillGroup = {
-    "isSpec": "ITEM.IsSpec",
-    "noSpec": "ITEM.NoSpec"
-};
-
-wfrp3.talentMax = {
-    "1": "1",
-    "2": "2",
-    "none": "None",
-    "ws": "CHARBonus.WS",
-    "bs": "CHARBonus.BS",
-    "s": "CHARBonus.S",
-    "t": "CHARBonus.T",
-    "i": "CHARBonus.I",
-    "ag": "CHABonus.Ag",
-    "dex": "CHARBonus.Dex",
-    "int": "CHARBonus.Int",
-    "wp": "CHARBonus.WP",
-    "fel": "CHARBonus.Fel"
-}
-
 
 // Weapon Groups
 wfrp3.weaponGroups = {
-    "basic": "SPEC.Basic",
-    "cavalry": "SPEC.Cavalry",
-    "fencing": "SPEC.Fencing",
-    "brawling": "SPEC.Brawling",
-    "flail": "SPEC.Flail",
-    "parry": "SPEC.Parry",
-    "polearm": "SPEC.Polearm",
-    "twohanded": "SPEC.TwoHanded",
-    "blackpowder": "SPEC.Blackpowder",
-    "bow": "SPEC.Bow",
-    "crossbow": "SPEC.Crossbow",
-    "entangling": "SPEC.Entangling",
-    "engineering": "SPEC.Engineering",
-    "explosives": "SPEC.Explosives",
-    "sling": "SPEC.Sling",
-    "throwing": "SPEC.Throwing",
+    "basic": "Basic",
+    "cavalry": "Cavalry",
+    "fencing": "Fencing",
+    "brawling": "Brawling",
+    "flail": "Flail",
+    "polearm": "Polearm",
+    "greatweapon": "Great Weapon",
+    "staff": "Staff",
+    "spear": "Spear",
+    "blackpowder": "Blackpowder",
+    "bow": "Bow",
+    "crossbow": "Crossbow",
+    "sling": "Sling",
+    "throwing": "Throwing"
 };
 
 // Given a group, what's the primary type, melee or ranged
@@ -481,15 +152,13 @@ wfrp3.groupToType = {
     "fencing": "melee",
     "brawling": "melee",
     "flail": "melee",
-    "parry": "melee",
     "polearm": "melee",
-    "twohanded": "melee",
+    "greatweapon": "melee",
+    "staff": "melee",
+    "spear": "melee",
     "blackpowder": "ranged",
     "bow": "ranged",
     "crossbow": "ranged",
-    "entangling": "ranged",
-    "engineering": "ranged",
-    "explosives": "ranged",
     "sling": "ranged",
     "throwing": "ranged",
 };
@@ -506,40 +175,17 @@ wfrp3.weaponGroupDescriptions = {
     "fencing": "Fencing",
     "brawling": "Brawling",
     "flail": "wfrp3.GroupDescription.Flail",
-    "parry": "wfrp3.GroupDescription.Parry",
     "polearm": "Polearm",
-    "twohanded": "Two-Handed",
-    "blackpowder": "wfrp3.GroupDescription.Blackpowder",
+    "greatweapon": "Great Weapon",
+    "staff": "Staff",
+    "spear": "Spear",
+
     "bow": "Bow",
-    "crossbow": "wfrp3.GroupDescription.Crossbow",
-    "entangling": "Entangling",
-    "engineering": "wfrp3.GroupDescription.Engineering",
-    "explosives": "wfrp3.GroupDescription.Explosives",
     "sling": "Sling",
+    "blackpowder": "wfrp3.GroupDescription.Blackpowder",
+    "crossbow": "wfrp3.GroupDescription.Crossbow",
     "throwing": "wfrp3.GroupDescription.Throwing",
 };
-
-// Weapon Reach
-wfrp3.weaponReaches = {
-    "personal": "wfrp3.Reach.Personal",
-    "vshort": "wfrp3.Reach.VShort",
-    "short": "wfrp3.Reach.Short",
-    "average": "wfrp3.Reach.Average",
-    "long": "wfrp3.Reach.Long",
-    "vLong": "wfrp3.Reach.VLong",
-    "massive": "wfrp3.Reach.Massive",
-}
-
-// Weapon reach descriptions
-wfrp3.reachDescription = {
-    "personal": "wfrp3.Reach.PersonalDescription",
-    "vshort": "wfrp3.Reach.VShortDescription",
-    "short": "wfrp3.Reach.ShortDescription",
-    "average": "wfrp3.Reach.AverageDescription",
-    "long": "wfrp3.Reach.LongDescription",
-    "vLong": "wfrp3.Reach.VLongDescription",
-    "massive": "wfrp3.Reach.MassiveDescription",
-}
 
 // Ammo Groups
 wfrp3.ammunitionGroups = {
@@ -551,172 +197,32 @@ wfrp3.ammunitionGroups = {
 
 // Item Qualities
 wfrp3.itemQualities = {
-    "durable": "PROPERTY.Durable",
-    "fine": "PROPERTY.Fine",
-    "lightweight": "PROPERTY.Lightweight",
-    "practical": "PROPERTY.Practical",
+    "attund1": "Attiund 1",
+    "attund2": "Attiund 2",
+    "attund3": "Attiund 3",
+    "attund4": "Attiund 4",
+    "attund5": "Attiund 5",
+    "blast": "Blast",
+    "defensive": "Defensive",
+    "entangling": "Entangling",
+    "fast": "Fast",
+    "pierce1": "Pierce 1",
+    "pierce2": "Pierce 2",
+    "pierce3": "Pierce 3",
+    "pierce4": "Pierce 4",
+    "pierce5": "Pierce 5",
+    "reload": "Reload",
+    "slow": "Slow",
+    "thrown": "Thrown",
+    "twohanded": "Two-Handed",
+    "slow": "Slow",
+    "unreliable1": "Unreliable 1",
+    "unreliable2": "Unreliable 2",
+    "unreliable3": "Unreliable 3",
+    "unreliable4": "Unreliable 4",
+    "unreliable5": "Unreliable 5",
+    "vicious": "Vicious"
 };
-
-// Item Flaws
-wfrp3.itemFlaws = {
-    "ugly": "PROPERTY.Ugly",
-    "shoddy": "PROPERTY.Shoddy",
-    "unreliable": "PROPERTY.Unreliable",
-    "bulky": "PROPERTY.Bulky",
-}
-
-
-// Weapon Qualities
-wfrp3.weaponQualities = {
-    "accurate": "PROPERTY.Accurate",
-    "blackpowder": "PROPERTY.Blackpowder",
-    "blast": "PROPERTY.Blast",
-    "damaging": "PROPERTY.Damaging",
-    "defensive": "PROPERTY.Defensive",
-    "entangle": "PROPERTY.Entangle",
-    "fast": "PROPERTY.Fast",
-    "hack": "PROPERTY.Hack",
-    "impact": "PROPERTY.Impact",
-    "impale": "PROPERTY.Impale",
-    "penetrating": "PROPERTY.Penetrating",
-    "pistol": "PROPERTY.Pistol",
-    "precise": "PROPERTY.Precise",
-    "pummel": "PROPERTY.Pummel",
-    "repeater": "PROPERTY.Repeater",
-    "shield": "PROPERTY.Shield",
-    "trapblade": "PROPERTY.TrapBlade",
-    "unbreakable": "PROPERTY.Unbreakable",
-    "wrap": "PROPERTY.Wrap"
-};
-
-// Weapon Flaws
-wfrp3.weaponFlaws = {
-    "dangerous": "PROPERTY.Dangerous",
-    "imprecise": "PROPERTY.Imprecise",
-    "reload": "PROPERTY.Reload",
-    "slow": "PROPERTY.Slow",
-    "tiring": "PROPERTY.Tiring",
-    "undamaging": "PROPERTY.Undamaging"
-};
-
-
-// Weapon Quality Descriptions (Used in dropdown info)
-wfrp3.qualityDescriptions = {
-    "accurate": "wfrp3.Properties.Accurate",
-    "blackpowder": "wfrp3.Properties.Blackpowder",
-    "blast": "wfrp3.Properties.Blast",
-    "damaging": "wfrp3.Properties.Damage",
-    "defensive": "wfrp3.Properties.Defensive",
-    "distract": "wfrp3.Properties.Distract",
-    "entangle": "wfrp3.Properties.Entangle",
-    "fast": "wfrp3.Properties.Fast",
-    "hack": "wfrp3.Properties.Hack",
-    "impact": "wfrp3.Properties.Impact",
-    "impale": "wfrp3.Properties.Impale",
-    "penetrating": "wfrp3.Properties.Penetrating",
-    "pistol": "wfrp3.Properties.Pistol",
-    "precise": "wfrp3.Properties.Precise",
-    "pummel": "wfrp3.Properties.Pummel",
-    "repeater": "wfrp3.Properties.Repeater",
-    "shield": "wfrp3.Properties.Shield",
-    "trapblade": "wfrp3.Properties.Trapblade",
-    "unbreakable": "wfrp3.Properties.Unbreakable",
-    "wrap": "wfrp3.Properties.Wrap",
-    "flexible": "wfrp3.Properties.Flexible",
-    "impenetrable": "wfrp3.Properties.Impenetrable",
-    "durable": "wfrp3.Properties.Durable",
-    "fine": "wfrp3.Properties.Fine",
-    "lightweight": "wfrp3.Properties.Lightweight",
-    "practical": "wfrp3.Properties.Practical",
-};
-
-// Weapon Flaw Descriptions (used in dropdown info)
-wfrp3.flawDescriptions = {
-    "dangerous": "wfrp3.Properties.Dangerous",
-    "imprecise": "wfrp3.Properties.Imprecise",
-    "reload": "wfrp3.Properties.Reload",
-    "slow": "wfrp3.Properties.Slow",
-    "tiring": "wfrp3.Properties.Tiring",
-    "undamaging": "wfrp3.Properties.Undamaging",
-    "partial": "wfrp3.Properties.Partial",
-    "weakpoints": "wfrp3.Properties.Weakpoints",
-    "ugly": "wfrp3.Properties.Ugly",
-    "shoddy": "wfrp3.Properties.Shoddy",
-    "unreliable": "wfrp3.Properties.Unreliable",
-    "bulky": "wfrp3.Properties.Bulky"
-};
-
-// Armor Qualities
-wfrp3.armorQualities = {
-    "flexible": "Flexible",
-    "impenetrable": "Impenetrable",
-};
-
-// Armor Flaws
-wfrp3.armorFlaws = {
-    "partial": "Partial",
-    "weakpoints": "Weakpoints",
-};
-
-// Equipment Types
-wfrp3.armorTypes = {
-    "softLeather": "wfrp3.ArmourType.SLeather",
-    "boiledLeather": "wfrp3.ArmourType.BLeather",
-    "mail": "wfrp3.ArmourType.Mail",
-    "plate": "wfrp3.ArmourType.Plate",
-    "other": "wfrp3.ArmourType.Other"
-};
-
-// Range Test Modifiers
-wfrp3.rangeModifiers = {
-    "Point Blank": "Easy (+40)",
-    "Short Range": "Average (+20)",
-    "Normal": "Challenging (+0)",
-    "Long Range": "Difficult (-10)",
-    "Extreme": "Very Hard (-30)",
-}
-
-// Difficulty Modifiers
-wfrp3.difficultyModifiers = {
-    "veasy": 60,
-    "easy": 40,
-    "average": 20,
-    "challenging": 0,
-    "difficult": -10,
-    "hard": -20,
-    "vhard": -30
-}
-
-// Difficulty Labels
-wfrp3.difficultyLabels = {
-
-    "veasy": "Very Easy (+60)",
-    "easy": "Easy (+40)",
-    "average": "Average (+20)",
-    "challenging": "Challenging (+0)",
-    "difficult": "Difficult (-10)",
-    "hard": "Hard (-20)",
-    "vhard": "Very Hard (-30)"
-}
-
-wfrp3.locations = {
-    "head": "Head",
-    "body": "Body",
-    "rArm": "Right Arm",
-    "lArm": "Left Arm",
-    "rLeg": "Right Leg",
-    "lLeg": "Left Leg",
-}
-
-// Trapping Availability
-wfrp3.availability = {
-    "None": "-",
-    "common": "wfrp3.Availability.Common",
-    "scarce": "wfrp3.Availability.Scarce",
-    "rare": "wfrp3.Availability.Rare",
-    "exotic": "wfrp3.Availability.Exotic",
-}
-
 
 // Trapping Types
 wfrp3.trappingTypes = {
@@ -757,6 +263,7 @@ wfrp3.actorSizes = {
     "enor": "SPEC.Enormous",
     "mnst": "SPEC.Monstrous"
 };
+
 wfrp3.actorSizeNums = {
     "tiny": 0,
     "ltl": 1,
@@ -817,31 +324,6 @@ wfrp3.magicWind = {
     "tzeentch": "Dhar",
 };
 
-wfrp3.loreEffect = {
-    "petty": "None",
-    "beasts": "wfrp3.LoreDescription.Beasts",
-    "death": "wfrp3.LoreDescription.Death",
-    "fire": "wfrp3.LoreDescription.Fire",
-    "heavens": "wfrp3.LoreDescription.Heavens",
-    "metal": "wfrp3.LoreDescription.Metal",
-    "life": "wfrp3.LoreDescription.Life",
-    "light": "wfrp3.LoreDescription.Light",
-    "shadow": "wfrp3.LoreDescription.Shadow",
-    "hedgecraft": "wfrp3.LoreDescription.Hedgecraft",
-    "witchcraft": "wfrp3.LoreDescription.Witchcraft",
-    "daemonology": "",
-    "necromancy": "",
-    "nurgle": "",
-    "slaanesh": "",
-    "tzeentch": "",
-};
-
-// Types of prayers
-wfrp3.prayerTypes = {
-    "blessing": "Blessing",
-    "miracle": "Miracle"
-}
-
 wfrp3.mutationTypes = {
     "physical": "Physical",
     "mental": "Mental"
@@ -870,7 +352,6 @@ wfrp3.conditions = {
 	"fear": "wfrp3.ConditionName.Fear",
 	"defeated": "wfrp3.ConditionName.Defeated"
 }
-
 
 wfrp3.conditionDescriptions = {
     "ablaze": "wfrp3.Conditions.Ablaze",
@@ -940,81 +421,37 @@ wfrp3.symptomTreatment = {
     "swelling": "wfrp3.SymptomTreatment.Swelling",
 }
 
-wfrp3.earningValues = {
-    "b": "2d10",
-    "s": "1d10",
-    "g": "1",
-}
-
-wfrp3.randomExp = {
-    speciesRand: 20,
-    careerRand: 50,
-    careerReroll: 25,
-    statsRand: 50,
-    statsReorder: 25
-}
-
-wfrp3.traitBonuses = {
-    "big": {
-        "s": 10,
-        "t": 10,
-        "ag": -5
+wfrp3.craftsmanship = {
+    "Superior": {
+        "Cost": "*10",
+        "Rarity": "+1"
     },
-    "brute": {
-        "m": -1,
-        "t": 10,
-        "s": 10,
-        "ag": -10
+    "Average": {       
+        "Cost": "*1",
+        "Rarity": "+0"
     },
-    "clever": {
-        "int": 20,
-        "i": 10
-    },
-    "cunning": {
-        "int": 10,
-        "fel": 10,
-        "i": 10
-    },
-    "elite": {
-        "ws": 20,
-        "bs": 20,
-        "wp": 20
-    },
-    "fast": {
-        "ag": 10,
-        "m": 1
-    },
-    "leader": {
-        "fel": 10,
-        "wp": 10
-    },
-    "tough": {
-        "t": 10,
-        "wp": 10
-    },
-    "swarm": {
-        "ws": 10
+    "Poor": {
+        "Cost": "*0.5",
+        "Rarity": "-1"
     }
 }
 
-wfrp3.talentBonuses = {
-    "savvy": "int",
-    "suave": "fel",
-    "marksman": "bs",
-    "very strong": "s",
-    "sharp": "i",
-    "lightning reflexes": "ag",
-    "coolheaded": "wp",
-    "very resilient": "t",
-    "nimble fingered": "dex",
-    "warrior born": "ws"
-}
-
-const DAMAGE_TYPE = {
-    NORMAL: 0,
-    IGNORE_AP: 1,
-    IGNORE_TB: 2,
-    IGNORE_ALL: 3
+wfrp3.availability = {
+    "Exotic": {
+        test: "4x"
+    },
+    "Rare": {
+        test: "3x"
+    },   
+    "Common": {
+        test: "2x"
+    },
+    "Plentiful": {
+        test:  "1x"
+    },
+    "Abundant": {
+        test:  "0x"
+    }
 }
 
 const PSEUDO_ENTITIES = [
@@ -1024,61 +461,3 @@ const PSEUDO_ENTITIES = [
 	"Roll",
 	"Pay"
 ]
-
-wfrp3.availabilityTable = {
-    "MARKET.Village": {
-        "wfrp3.Availability.Common": {
-            test: 100,
-            stock: '2'
-        },
-        "wfrp3.Availability.Scarce": {
-            test: 30,
-            stock: '1'
-        },
-        "wfrp3.Availability.Rare": {
-            test: 15,
-            stock: '1'
-        },
-        "wfrp3.Availability.Exotic": {
-            test: 0,
-            stock: '0'
-        }
-    },
-    "MARKET.Town": {
-        "wfrp3.Availability.Common": {
-            test: 100,
-            stock: '2d10'
-        },
-        "wfrp3.Availability.Scarce": {
-            test: 60,
-            stock: '1d10'
-        },
-        "wfrp3.Availability.Rare": {
-            test: 30,
-            stock: '1d5'
-        },
-        "wfrp3.Availability.Exotic": {
-            test: 0,
-            stock: '0'
-        }
-    },
-    "MARKET.City": {
-        "wfrp3.Availability.Common": {
-            test: 100,
-            stock: '∞'
-        },
-        "wfrp3.Availability.Scarce": {
-            test: 90,
-            stock: '∞'
-        },
-        "wfrp3.Availability.Rare": {
-            test: 45,
-            stock: '∞'
-        },
-        "wfrp3.Availability.Exotic": {
-            test: 0,
-            stock: '0'
-        }
-    }
-}
-

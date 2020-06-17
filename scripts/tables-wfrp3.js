@@ -103,21 +103,6 @@ class WFRP_Tables
     }
   }
 
-
-  /* -------------------------------------------- */
-
-  // critlleg doesn't exist, yet will be asked for because hit location and 'crit' are concatenated
-  // Therefore, change specific locations to generalized ones (rarm -> arm)
-  static generalizeTable(table)
-  {
-    table = table.toLowerCase();
-    table = table.replace("lleg", "leg");
-    table = table.replace("rleg", "leg");
-    table = table.replace("rarm", "arm");
-    table = table.replace("larm", "arm");
-    return table;
-  }
-
   /* -------------------------------------------- */
 
   /**
@@ -298,17 +283,6 @@ class WFRP_Tables
     }
     return tableMenu;
   }
-
-  // When critical casting, there are few options available, one could be a critical wound on a location, so offer a clickable link.
-  static criticalCastMenu(crittable)
-  {
-    return `${game.i18n.localize("CHAT.ChooseFrom")}:<ul>
-      <li><b>${game.i18n.localize("ROLL.CritCast")}</b>: ${game.i18n.localize("CHAT.CritCast")} <a class=table-click data-table=${crittable}><i class="fas fa-list"></i> ${game.i18n.localize("Critical Wound")}</a></li>
-      <li><b>${game.i18n.localize("ROLL.TotalPower")}</b>: ${game.i18n.localize("CHAT.TotalPower")}</li>
-      <li><b>${game.i18n.localize("ROLL.UnstoppableForce")}</b>: ${game.i18n.localize("CHAT.UnstoppableForce")}</li>
-      </ul`;
-  }
-
 
   // Critical casting without reaching appropriate SL - forced to be Total power in order to get the spell off
   static restrictedCriticalCastMenu()

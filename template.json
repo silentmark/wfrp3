@@ -2,79 +2,7 @@
   "Actor": {
     "types": ["character","npc","creature"],
     "templates": {
-      "characteristics":{
-        "characteristics": {
-          "ws": {
-            "type": "number",
-            "label": "CHAR.WS",
-            "abrev": "CHARAbbrev.WS",
-            "initial": 20,
-            "advances": 0
-          },
-          "bs": {
-            "type": "Number",
-            "label": "CHAR.BS",
-            "abrev": "CHARAbbrev.BS",
-            "initial": 20,
-            "advances": 0
-          },
-          "s": {
-            "type": "Number",
-            "label": "CHAR.S",
-            "abrev": "CHARAbbrev.S",
-            "initial": 20,
-            "advances": 0
-          },
-          "t": {
-            "type": "Number",
-            "label": "CHAR.T",
-            "abrev": "CHARAbbrev.T",
-            "initial": 20,
-            "advances": 0
-          },
-          "i": {
-            "type": "Number",
-            "label": "CHAR.I",
-            "abrev": "CHARAbbrev.I",
-            "initial": 20,
-            "advances": 0
-          },
-          "ag": {
-            "type": "Number",
-            "label": "CHAR.Ag",
-            "abrev": "CHARAbbrev.Ag",
-            "initial": 20,
-            "advances": 0
-          },
-          "dex": {
-            "type": "Number",
-            "label": "CHAR.Dex",
-            "abrev": "CHARAbbrev.Dex",
-            "initial": 20,
-            "advances": 0
-          },
-          "int": {
-            "type": "Number",
-            "label": "CHAR.Int",
-            "abrev": "CHARAbbrev.Int",
-            "initial": 20,
-            "advances": 0
-          },
-          "wp": {
-            "type": "Number",
-            "label": "CHAR.WP",
-            "abrev": "CHARAbbrev.WP",
-            "initial": 20,
-            "advances": 0
-          },
-          "fel": {
-            "type": "Number",
-            "label": "CHAR.Fel",
-            "abrev": "CHARAbbrev.Fel",
-            "initial": 20,
-            "advances": 0
-          }
-        },
+      "characteristics":{        
         "attributes": {
           "Str": {
             "label": "Strength",
@@ -312,6 +240,12 @@
             "value": 4,
             "max": 4
           },
+          "encumbrance": {
+            "type": "Number",
+            "label": "Encumbrance",
+            "max": 0,
+            "current": 0
+          },
           
           "fortune": {
             "type": "Number",
@@ -355,7 +289,11 @@
             "label": "Soak",
             "value": 0
           },
-
+          "stanceLimit": {            
+            "reckless": 2,
+            "conservative": 2,
+            "default": "C"
+          },
           "stance": {
             "R6": false,
             "R5": false,
@@ -371,48 +309,6 @@
             "C5": false,
             "C6": false
           }
-        },
-        "status": {
-          "wounds": {
-            "type": "Number",
-            "label": "Wounds",
-            "abrev": "W",
-            "value": 8,
-            "max": 8
-          },         
-          "advantage": {
-            "type": "Number",
-            "label": "Advantage",
-            "value": 0,
-            "max": 10
-          },
-          "criticalWounds": {
-            "type": "Number",
-            "label": "Critical Wounds",
-            "value": 0,
-            "max": 2
-          },
-          "sin": {
-            "type": "Number",
-            "label": "Sin",
-            "value": 0
-          },
-          "penalties": {
-            "type": "String",
-            "label": "Penalties",
-            "value": ""
-          },
-          "corruption": {
-            "type": "Number",
-            "label": "Corruption",
-            "value": 0
-          },
-          "encumbrance": {
-            "type": "Number",
-            "label": "Encumbrance",
-            "max": 0,
-            "current": 0
-          }          
         }
       },
       "details": {
@@ -432,22 +328,10 @@
             "label": "Size",
             "value": "avg"
           },
-          "move": {
-            "type": "Number",
-            "label": "Movement",
-            "value": 4,
-            "walk": 0,
-            "run": 0
-          },
           "god": {
             "type": "String",
             "label": "God",
             "value": ""
-          },
-          "hitLocationTable": {
-            "value": "hitloc",
-            "type": "String",
-            "label": "Hit Location Table"
           }
         }
       }
@@ -456,29 +340,7 @@
       "templates": ["characteristics","status","details"],
       "state": {
         "player": true
-      },
-      "status": {
-        "fate": {
-          "type": "Number",
-          "label": "Fate",
-          "value": 0
-        },
-        "fortune": {
-          "type": "Number",
-          "label": "Fortune",
-          "value": 0
-        },
-        "resilience": {
-          "type": "Number",
-          "label": "Resilience",
-          "value": 0
-        },
-        "resolve": {
-          "type": "Number",
-          "label": "Resolve",
-          "value": 0
-        }
-      },
+      },     
       "details": {
         "experience": {
           "type": "Number",
@@ -510,19 +372,9 @@
           "label": "Motivation",
           "value": ""
         },
-        "class": {
-          "type": "String",
-          "label": "Class",
-          "value": ""
-        },
         "career": {
           "type": "String",
           "label": "Career",
-          "value": ""
-        },
-        "careerlevel": {
-          "type": "String",
-          "label": "Career Level",
           "value": ""
         },
         "status": {
@@ -576,12 +428,13 @@
     },
     "creature": {
       "templates": ["characteristics", "status", "details"],
-      "excludedTraits": []
+      "state": {
+        "player": false
+      }
     }
   },
   "Item": {
     "types": [
-      "ammunition",
       "armour",
       "career",
       "container",
@@ -590,13 +443,9 @@
       "injury",
       "money",
       "mutation",
-      "prayer",
       "psychology",
       "talent",
       "trapping",
-      "skill",
-      "spell",
-      "trait",
       "card",
       "weapon"
     ],
@@ -642,27 +491,10 @@
           "label": "Description",
           "value": ""
         }
-      },
-      "location": {
-        "location": {
-        "type": "Number",
-        "label": "Location",
-        "value": 0
-        }
       }
     },
     "career": {
       "templates": ["description"],
-      "careergroup": {
-        "type": "String",
-        "label": "Career Group",
-        "value": ""
-      },
-      "class": {
-        "type": "String",
-        "label": "Class",
-        "value": ""
-      },
       "current": {
         "type": "Boolean",
         "value": false
@@ -671,47 +503,123 @@
         "type": "Boolean",
         "value": false
       },
-      "level": {
-        "type": "String",
-        "label": "Career Level",
-        "value": 1
+      "basic": {
+        "type": "Boolean",
+        "value": true
       },
-      "status": {
-        "tier": "",
-        "standing": 0
+      "stance": {
+        "reckless": 0,
+        "conservative": 0
       },
-      "characteristics": [],
+      "advances": {
+        "action": 0,
+        "talent": 0,
+        "skill": 0,
+        "fortune": 0,
+        "conservative": 0,
+        "reckless": 0,
+        "wound": 0
+      },
+      "races": [],
+      "traits": [],
+      "primaryAttributes": [],
       "skills": [],
-      "talents": [],
-      "trappings": [],
-      "incomeSkill": []
+      "talentSlots": [],
+      "experience": {
+        "action": {
+          "taken": false,
+          "name" : ""
+        },
+        "talent": {
+          "taken": false,
+          "name" : ""
+        },
+        "skill": {
+          "taken": false,
+          "name" : ""
+        },
+        "wound": {
+          "taken": false,
+          "name" : ""
+        },
+        "open1": {
+          "taken": false,
+          "name" : ""
+        },
+        "open2": {
+          "taken": false,
+          "name" : ""
+        },
+        "open3": {
+          "taken": false,
+          "name" : ""
+        },
+        "open4": {
+          "taken": false,
+          "name" : ""
+        },
+        "open5": {
+          "taken": false,
+          "name" : ""
+        },
+        "open6": {
+          "taken": false,
+          "name" : ""
+        },
+        "nonCareer1": {
+          "taken": 0,
+          "name" : ""
+        },
+        "nonCareer2": {
+          "taken": 0,
+          "name" : ""
+        },
+        "transition": {
+          "taken": 0,
+          "name" : ""
+        },
+        "dedication": {
+          "taken": false,
+          "name" : ""
+        }
+      }
     },
     "weapon": {
-      "templates": ["description", "quantity", "encumbrance", "price", "availability", "location"],      
-      "availability": {
+      "templates": ["description", "quantity", "encumbrance", "price", "availability"],      
+      "damageRating": {
+        "type": "Number",
+        "label": "Damage Rating",
+        "value": 0
+      },
+      "criticalRating": {
+        "type": "Number",
+        "label": "Critical Rating",
+        "value": 0
+      },
+      "weaponGroup": {
         "type": "String",
-        "label": "Availability",
+        "label": "Weapon Group",
+        "value": "basic"
+      },
+      "craftsmanship":{
+        "type": "String",
+        "label": "Craftsmanship",
+        "value": "Avarage"
+      },
+      "qualities": {
+        "type": "String",
+        "label": "Qualities",
         "value": ""
       },
-      "damage": {
+      "special": {
         "type": "String",
-        "label": "Damage",
-        "value" : ""
-      },
-      "reach": {
-        "type": "String",
-        "label": "Reach",
+        "label": "Special",
         "value": ""
       },
       "range": {
         "type": "String",
         "label": "Range",
         "value": ""
-      },
-      "twohanded": {
-        "type": "Boolean",
-        "label": "Two-Handed",
-        "value": false
       },
       "ammunitionGroup": {
         "type": "String",
@@ -722,97 +630,32 @@
         "type": "Number",
         "value": 0
       },
-      "weaponGroup": {
-        "type": "String",
-        "label": "Weapon Group",
-        "value": "basic"
-      },
-      "qualities": {
-        "type": "String",
-        "label": "Qualities",
-        "value": ""
-      },
-      "flaws": {
-        "type": "String",
-        "label": "Flaws",
-        "value": ""
-      },
-      "special": {
-        "type": "String",
-        "label": "Special",
-        "value": ""
-      },
-      "equipped": false
-    },
-    "armour": {
-      "templates": ["description", "quantity", "encumbrance", "price", "availability", "location"],      
-      "worn": {
+      "equipped": {
         "type": "Boolean",
-        "label": "Worn",
+        "label": "Equipped",
         "value": false
       },
-      "armorType": {
+      "container": {
         "type": "String",
-        "label": "Armour Type",
-        "value": ""
-      },
-      "penalty": {
-        "type": "String",
-        "label": "Penalty",
-        "value": ""
-      },
-      "qualities": {
-        "type": "String",
-        "label": "Qualities",
-        "value": ""
-      },
-      "flaws": {
-        "type": "String",
-        "label": "Flaws",
-        "value": ""
-      },
-      "special": {
-        "type": "String",
-        "label": "Special",
-        "value": ""
-      },
-      "maxAP": {
-        "head": 0,
-        "lArm": 0,
-        "rArm": 0,
-        "lLeg": 0,
-        "rLeg": 0,
-        "body": 0
-      },
-      "currentAP": {
-        "head": -1,
-        "lArm": -1,
-        "rArm": -1,
-        "lLeg": -1,
-        "rLeg": -1,
-        "body": -1
-      },
-      "location": {
-        "type": "Number",
-        "label": "Location",
-        "value": 0
+        "label": "In Container",
+        "value": "0"
       }
     },
-    "ammunition": {
-      "templates": ["description", "quantity", "encumbrance", "price", "availability", "location"],      
-      "ammunitionType": {
+    "armour": {
+      "templates": ["description", "quantity", "encumbrance", "price", "availability"],
+      "craftsmanship":{
         "type": "String",
-        "label": "Ammunition Type",
+        "label": "Craftsmanship",
+        "value": "Avarage"
+      },
+      "defence": {
+        "type": "Number",
+        "label": "Defence",
         "value": ""
       },
-      "range": {
-        "type": "String",
-        "label": "Range",
-        "value": ""
-      },
-      "damage": {
-        "type": "String",
-        "label": "Damage",
+      "soak": {
+        "type": "Number",
+        "label": "Soak",
         "value": ""
       },
       "qualities": {
@@ -820,19 +663,24 @@
         "label": "Qualities",
         "value": ""
       },
-      "flaws": {
-        "type": "String",
-        "label": "Flaws",
-        "value": ""
-      },
       "special": {
         "type": "String",
         "label": "Special",
         "value": ""
+      },
+      "equipped": {
+        "type": "Boolean",
+        "label": "Equipped",
+        "value": false
+      },
+      "container": {
+        "type": "String",
+        "label": "In Container",
+        "value": "0"
       }
     },
     "container": {
-      "templates": ["description", "quantity", "encumbrance", "price", "availability", "location"],      
+      "templates": ["description", "quantity", "encumbrance", "price", "availability"],      
       "worn": {
         "type": "Boolean",
         "label": "Worn",
@@ -852,24 +700,34 @@
         "type": "Boolean",
         "label": "Count Enc",
         "value": true
+      },
+      "equipped": {
+        "type": "Boolean",
+        "label": "Equipped",
+        "value": false
+      },
+      "container": {
+        "type": "String",
+        "label": "In Container",
+        "value": "0"
       }
     },
     "trapping": {
-      "templates": ["description", "quantity", "encumbrance", "price", "availability", "location"],
+      "templates": ["description", "quantity", "encumbrance", "price", "availability"],
       "trappingType": {
         "type": "String",
         "label": "Trapping Type",
         "value": ""
       },
-      "worn": false,
-      "spellIngredient": {
-        "type": "String",
-        "value": ""
+      "equipped": {
+        "type": "Boolean",
+        "label": "Equipped",
+        "value": false
       },
-      "location": {
-        "type": "Number",
-        "label": "Location",
-        "value": 0
+      "container": {
+        "type": "String",
+        "label": "In Container",
+        "value": "0"
       }
     },
     "talent": {
@@ -930,137 +788,12 @@
         }
       }
     },
-    "skill": {
-      "templates": ["description"],
-      "advanced": {
-        "value": "",
-        "type": "String"
-      },
-      "grouped": {
-        "value": "",
-        "type": "String"
-      },
-      "characteristic": {
-        "type": "String",
-        "label": "Characteristic",
-        "value": "ws"
-      },
-      "advances": {
-        "type": "Number",
-        "label": "Advances",
-        "value": 0
-      },
-      "total": {
-        "type": "Number",
-        "label": "Total"
-      }
-    },
-    "spell": {
-      "templates": ["description"],
-      "lore": {
-        "type": "String",
-        "label": "Lore",
-        "value": "",
-        "effect": ""
-      },
-      "range": {
-        "type": "String",
-        "label": "Range",
-        "value": ""
-      },
-      "target": {
-        "type": "String",
-        "label": "Target",
-        "value": "",
-        "aoe": false
-      },
-      "duration": {
-        "type": "String",
-        "label": "Duration",
-        "value": "",
-        "extendable": false
-      },
-      "damage": {
-        "type": "String",
-        "label": "Damage",
-        "value": ""
-      },
-      "cn": {
-        "type": "Number",
-        "label": "Casting Number",
-        "value": 0,
-        "SL": 0
-      },
-      "magicMissile": {
-        "type": "Boolean",
-        "label": "Magic Missile",
-        "value": false
-      },
-      "memorized": {
-        "type": "Boolean",
-        "label": "Memorized",
-        "value": false
-      },
-      "ingredients": [],
-      "currentIng": {
-        "type": "Number",
-        "label": "Ingredient",
-        "value": 0
-      },
-      "wind" : {
-        "value": ""
-      }
-    },
-    "prayer": {
-      "templates": ["description"],
-      "type": {
-        "type": "String",
-        "label": "Type",
-        "value": ""
-      },
-      "god": {
-        "type": "String",
-        "label": "God",
-        "value": ""
-      },
-      "range": {
-        "type": "String",
-        "label": "Range",
-        "value": ""
-      },
-      "duration": {
-        "type": "String",
-        "label": "Duration",
-        "value": ""
-      },
-      "target": {
-        "type": "String",
-        "label": "Target",
-        "value": "",
-        "aoe": false
-      },
-      "damage": {
-        "type": "String",
-        "label": "Damage",
-        "value": ""
-      }
-    },
     "mutation": {
       "templates": ["description"],
       "mutationType": {
         "label": "Type",
         "type": "String",
         "value": ""
-      },
-      "modifier": {
-        "value": "",
-        "type": "String",
-        "label": "Modifier"
-      },
-      "modifiesSkills": {
-        "value": false,
-        "type": "Boolean",
-        "label": "Skill Modifier?"
       }
     },
     "injury": {
@@ -1074,24 +807,14 @@
         "value": "",
         "type": "String",
         "label": "Penalty"
-      },
-      "duration": {
-        "label": "Duration",
-        "value": "",
-        "type": "String"
       }
     },
     "critical": {
       "templates": ["description"],
-      "wounds": {
+      "severity": {
         "value": "1",
-        "type": "String",
-        "label": "Wounds"
-      },
-      "modifier" : {
-        "value" : "",
-        "type" : "String",
-        "label" : "Test Modifier"
+        "type": "Number",
+        "label": "Severity"
       },
       "location": {
         "value": "",
@@ -1130,24 +853,8 @@
     "psychology": {
       "templates": ["description"]
     },
-    "trait": {
-      "templates": ["description"],
-      "rollable": {
-        "value": false,
-        "label": "Rollable",
-        "type": "Boolean",
-        "rollCharacteristic": "",
-        "bonusCharacteristic": "",
-        "defaultDifficulty" : "challenging"
-      },
-      "specification": {
-        "value": "",
-        "type": "String",
-        "label": "Specification"
-      }
-    },
     "money": {
-      "templates": ["description", "quantity", "encumbrance", "location"],
+      "templates": ["description", "quantity", "encumbrance"],
       "coinValue": {
         "label": "Value (in d)",
         "type": "Number",

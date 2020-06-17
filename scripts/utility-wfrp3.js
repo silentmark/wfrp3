@@ -34,100 +34,6 @@ class WFRP_Utility
   }
 
   /**
-   * Used when preparing armour - every time an armour item is prepared it's added as a layer. Each
-   * layer has booleans for qualities/flaws and an AP value
-   * 
-   * @param {Object} AP     AP object defined in actor preparation (see Actorwfrp3.prepareItems()) - consists of layers
-   * @param {Object} armor  'armour' Item type - armour layer that is being added
-   * @param {String} loc    Location key to lookup AP value at that location
-   */
-  static addLayer(AP, armor, loc)
-  {
-    let layer = {
-      value: armor.data.currentAP[loc],
-      armourType : armor.data.armorType.value // used for sound
-    }
-    if (armor.properties.qualities.includes("Impenetrable"))
-      layer.impenetrable = true;
-    if (armor.properties.flaws.includes("Partial"))
-      layer.partial = true;
-    if (armor.properties.flaws.includes("Weakpoints"))
-      layer.weakpoints = true;
-    if (armor.data.armorType.value == "plate" || armor.data.armorType.value == "mail")
-      layer.metal = true;
-
-    AP[loc].layers.push(layer);
-  }
-
-  /**
-   * Sorts qualities and flaws into an array of strings.
-   * 
-   * @param {Object}  item                Weapon/armor with qualities/flaws.  
-   * @param {Boolean} includeQualities    Whether to include qualities (false if skill not present)
-   */
-  static _prepareQualitiesFlaws(item, includeQualities = true)
-  {
-    let qualities = item.data.qualities.value.split(",").map(function (item)
-    {
-      if (item)
-      {
-        item = item.trim();
-        if (!(Object.values(WFRP_Utility.qualityList()).includes(item) || (Object.values(WFRP_Utility.flawList()).includes(item)))) //if the quality does not show up in either quality or flaw list, add it
-          wfrp3.itemQualities[item.toLowerCase().trim()] = item;
-        return item
-      }
-    });
-    let flaws = item.data.flaws.value.split(",").map(function (item)
-    {
-      if (item)
-      {
-        item = item.trim();
-        if (!(Object.values(WFRP_Utility.flawList()).includes(item) || (Object.values(WFRP_Utility.qualityList()).includes(item)))) //if the quality does not show up in either quality or flaw list, add it
-          wfrp3.itemFlaws[item.toLowerCase().trim()] = item;
-        return item;
-      }
-    });
-
-    if (!includeQualities)
-      qualities = [];
-
-
-    if (!item.data.special.value)
-      return qualities.concat(flaws).sort().filter(p => !!p);
-    else
-      return qualities.concat(flaws).sort().concat(game.i18n.localize("Special")).filter(p => !!p);
-
-  }
-
-  /**
-   * Sorts qualities and flaws into a more organized object.
-   * 
-   * @param {Array} properties    Array of strings listing qualities/flaws 
-   */
-  static _separateQualitiesFlaws(properties)
-  {
-    let qualities = [],
-      flaws = [],
-      special = [];
-    let allQualities = Object.values(this.qualityList());
-    let allFlaws = Object.values(this.flawList());
-    for (let prop of properties)
-    {
-      if (allQualities.includes(this.parsePropertyName(prop)))
-        qualities.push(prop);
-      else if (allFlaws.includes(this.parsePropertyName(prop)))
-        flaws.push(prop);
-      else
-        special.push(prop);
-    }
-    return {
-      qualities: qualities,
-      flaws: flaws,
-      special: special
-    }
-  }
-
-  /**
    * Roll characteristics given a species, or take average depending input
    * 
    * @param {string} species      Key or value for species in config
@@ -283,9 +189,8 @@ class WFRP_Utility
    * 
    * @param {String} itemName   Item name to be searched for 
    * @param {String} itemType   Item's type (armour, weapon, etc.)
-   * @param {String} location   Compendium to look into, format: <package.name> - "wfrp3.trappings"
    */
-  static async findItem(itemName, itemType, location = null)
+  static async findItem(itemName, itemType)
   {
     let items = game.items.entities.filter(i => i.type == itemType)
 
@@ -296,23 +201,6 @@ class WFRP_Utility
         return i;
     }
     let itemList
-
-    // find pack -> search pack -> return entity
-    if (location)
-    {
-      let pack = game.packs.find(p =>
-      {
-        location.split(".")[0] == p.metadata.package &&
-          location.split(".")[1] == p.metadata.name
-      })
-      if (pack)
-      {
-        await pack.getIndex().then(index => itemList = index);
-        let searchResult = itemList.find(t => t.name == itemName)
-        if (searchResult)
-          return await pack.getEntity(searchResult._id)
-      }
-    }
 
     // If all else fails, search each pack
     for (let p of game.packs)
@@ -340,24 +228,8 @@ class WFRP_Utility
    */
   static qualityList()
   {
-    let weapon = duplicate(wfrp3.weaponQualities);
-    let armor = duplicate(wfrp3.armorQualities);
     let item = duplicate(wfrp3.itemQualities);
-    let list = mergeObject(weapon, mergeObject(item, armor))
-    return list;
-  }
-
-
-  /**
-   * Return a list of all flaws
-   */
-  static flawList()
-  {
-    let weapon = duplicate(wfrp3.weaponFlaws);
-    let armor = duplicate(wfrp3.armorFlaws);
-    let item = duplicate(wfrp3.itemFlaws);
-    let list = mergeObject(weapon, mergeObject(item, armor))
-    return list;
+    return item;
   }
 
   /**
@@ -664,36 +536,6 @@ class WFRP_Utility
     if (speaker.token)
       actor = canvas.tokens.get(speaker.token).actor
     return actor
-  }
-
-  /**
-   * Returns all basic skills from the skills compendium
-   */
-  static async allBasicSkills()
-  {
-    let returnSkills = [];
-
-    const pack = game.packs.find(p => p.collection == "wfrp3.skills")
-    let skills = [];
-    await pack.getIndex().then(index => skills = index);
-    for (let sk of skills)
-    {
-      let skillItem = undefined;
-      await pack.getEntity(sk._id).then(skill => skillItem = skill);
-      if (skillItem.data.data.advanced.value == "bsc")
-      {
-        if (skillItem.data.data.grouped.value != "noSpec")
-        {
-          let startParen = skillItem.data.name.indexOf("(")
-          skillItem.data.name = skillItem.data.name.substring(0, startParen).trim();
-          if (returnSkills.filter(x => x.name.includes(skillItem.name)).length <= 0)
-            returnSkills.push(skillItem.data);
-        }
-        else
-          returnSkills.push(skillItem.data)
-      }
-    }
-    return returnSkills;
   }
 
   /**

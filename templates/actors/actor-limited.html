@@ -14,21 +14,28 @@
     <div class="items">
       <div class="characteristics">
         <div class="characteristics-table" cellpadding="0">
-          <!-- <div class="table-header"> -->
-            {{#each actor.data.characteristics as |ch c|}}
-            <div title="{{localize ch.label}}" data-char="{{ch}}" class="table-header">
-              <a  class ="ch-roll" data-char="{{c}}">{{localize ch.abrev}}</a>
-            </div>
+          <div class="table-header table-row">
+            {{#each actor.data.attributes as |at a|}}
+            <div title="{{at.label}}" class="table-header">
+              <div class="header-block">{{a}}</div>
+            </div>      
             {{/each}}
-          <!-- </div> -->
-          <!-- <div class="table-row"> -->
-            {{#each actor.data.characteristics as |ch c|}}
-            <div class="row-type table-data">
-              <input type = "text" value = "?" readonly>
-            </div>
-            {{/each}}
-          <!-- </div> -->
           </div>
+          <div class="table-row">
+            {{#each actor.data.attributes as |at a|}}
+            <div class="table-data">
+              <input readonly="readonly" data-attribute="{{a}}" name="actor.data.attributes.{{a}}.value" type="text" value="{{at.value}}" data-dtype="Number">
+            </div>
+            <div class="table-data attribute-luck">
+              {{#if at.luck}}
+              <a disabled="disabled" class="attribute-toggle"><i class="far fa-check-circle"></i></a>
+              {{else}}
+              <a disabled="disabled" class="attribute-toggle"><i class="far fa-circle"></i></a>
+              {{/if}}
+            </div>
+            {{/each}}      
+          </div>
+        </div>
       </div>
       </div>
   </section>

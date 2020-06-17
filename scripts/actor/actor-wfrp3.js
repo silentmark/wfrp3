@@ -1,36 +1,7 @@
-/**
- * Provides the main Actor data computation and organization.
- *
- * Actorwfrp3 contains all the preparation data and methods used for preparing an actor:
- * going through each Owned Item, preparing them for display based on characteristics.
- * Additionally, it handles all the different types of roll requests, setting up the
- * test dialog, how each test is displayed, etc.
- *
- *
- * @see   ActorSheetwfrp3 - Base sheet class
- * @see   ActorSheetwfrp3Character - Character sheet class
- * @see   ActorSheetwfrp3NPC - NPC sheet class
- * @see   ActorSheetwfrp3Creature - Creature sheet class
- * @see   Dicewfrp3 - Sends test data to roll tests.
- */
 class Actorwfrp3 extends Actor {
 
-  /**
-   * Override the create() function to provide additional wfrp3 functionality.
-   *
-   * This overrided create() function adds initial items and flags to an actor
-   * upon creation. Namely: Basic skills, the 3 default coin values (brass
-   * pennies, silver shillings, gold crowns) at a quantity of 0, and setting
-   * up the default Automatic Calculation flags to be true. We still want to
-   * use the upstream create method, so super.create() is called at the end.
-   * Additionally - See the preCreateActor hook for more initial settings 
-   * upon creation
-   *
-   * @param {Object} data        Barebones actor data which this function adds onto.
-   * @param {Object} options     (Unused) Additional options which customize the creation workflow.
-   *
-   */
-  static async create(data, options) {
+  static async create(data, options) 
+  {
     // If the created actor has items (only applicable to duplicated actors) bypass the new actor creation logic
     if (data.items)
     {
@@ -41,26 +12,13 @@ class Actorwfrp3 extends Actor {
     data.items = [];
 
     // Default auto calculation to true
-    data.flags =
-    {
-      autoCalcRun :  true,
-      autoCalcWalk :  true,
-      autoCalcWounds :  true,
-      autoCalcCritW :  true,
-      autoCalcCorruption :  true,
-      autoCalcEnc :  true
-    }
-    let basicSkills = await WFRP_Utility.allBasicSkills();
+    data.flags = { };
     let moneyItems = await WFRP_Utility.allMoneyItems()
     moneyItems = moneyItems.sort((a, b) => (a.data.coinValue.value > b.data.coinValue.value) ? -1 : 1);
 
     // If character, automatically add basic skills and money items
     if (data.type == "character")
     {
-      for (let sk of basicSkills) // Add basic skills
-      {
-        data.items.push(sk);
-      }
       for (let m of moneyItems)   // Add money items, with a quantity of 0
       {
         m.data.quantity.value = 0;
@@ -68,54 +26,8 @@ class Actorwfrp3 extends Actor {
       }
       super.create(data, options); // Follow through the the rest of the Actor creation process upstream
     }
-    // If not a character, ask the user whether they want to add basic skills / money
-    else if (data.type == "npc" || data.type == "creature")
-    {
-      new Dialog({
-        title: game.i18n.localize("ACTOR.BasicSkillsTitle"),
-        content: `<p>${game.i18n.localize("ACTOR.BasicSkillsPrompt")}</p>`,
-        buttons: {
-          yes: {
-            label: game.i18n.localize("Yes"),
-            callback: async dlg => {
-              for (let sk of basicSkills) // Add basic skills
-              {
-                data.items.push(sk);
-              }
-              for (let m of moneyItems)   // Add the money items, with a quantity of 0
-              {
-                m.data.quantity.value = 0;
-                data.items.push(m);
-              }
-              super.create(data, options); // Follow through the the rest of the Actor creation process upstream
-            }
-          },
-          no: {
-            label: game.i18n.localize("No"),
-            callback: async dlg => {
-              super.create(data, options); // Do not add new items, continue with the rest of the Actor creation process upstream
-            }
-          },
-        },
-        default: 'yes'
-      }).render(true);
-    }
   }
 
-
-  /**
-   * Calculates simple dynamic data when actor is updated.
-   *
-   * prepareData() is called when actor data is updated to recalculate values such as Characteristic totals, bonus (e.g.
-   * this is how Strength total and Strength Bonus gets updated whenever the user changes the Strength characteristic),
-   * movement values, and encumbrance. Some of these may or may not actually be calculated, depending on the user choosing
-   * not to have them autocalculated. These values are relatively simple, more complicated calculations that require items
-   * can be found in the sheet's getData() function.
-   * 
-   * NOTE: NOT TO BE CONFUSED WITH prepare() - that function is called upon rendering to organize and process actor data
-   *
-   * @see ActorSheetwfrp3.getData()
-   */
   prepareData()
   {
     try
@@ -123,33 +35,12 @@ class Actorwfrp3 extends Actor {
       super.prepareData();
       const data = this.data;
 
-      // For each characteristic, calculate the total and bonus value
-      for (let ch of Object.values(data.data.characteristics))
-      {
-        ch.value = ch.initial + ch.advances;
-        ch.bonus = Math.floor(ch.value / 10)
-        ch.cost = WFRP_Utility._calculateAdvCost(ch.advances, "characteristic")
-      }
-
       // Only characters have experience
+      // TODO: calculate other stuff like XP from career items, stance
       if ( data.type === "character" )
+      {
         data.data.details.experience.current = data.data.details.experience.total - data.data.details.experience.spent;
-
-      // Auto calculation values - only calculate if user has not opted to enter ther own values
-      if (data.flags.autoCalcWalk)
-        data.data.details.move.walk = parseInt(data.data.details.move.value)* 2;
-
-      if (data.flags.autoCalcRun)
-        data.data.details.move.run = parseInt(data.data.details.move.value) * 4;
-
-      if (data.flags.autoCalcEnc)
-        data.data.status.encumbrance.max = data.data.characteristics.t.bonus + data.data.characteristics.s.bonus;
-
-      if (game.settings.get("wfrp3", "capAdvantageIB"))
-        data.data.status.advantage.max = data.data.characteristics.i.bonus
-      else
-        data.data.status.advantage.max = 10;
-
+      }
     }
     catch(error)
     {
@@ -158,50 +49,17 @@ class Actorwfrp3 extends Actor {
     }
   }
 
-  /* --------------------------------------------------------------------------------------------------------- */
-  /* Setting up Rolls
-  /*
-  /* All "setup______" functions gather the data needed to roll a certain test. These are in 3 main objects.
-  /* These 3 objects are then given to DiceWFRP.prepareTest() to show the dialog, see that function for its usage.
-  /*
-  /* The 3 Main objects:
-  /* testData - Data associated with modifications to rolling the test itself, or results of the test.
-  /*            Examples of this are whether hit locations are found, Weapon qualities that may cause
-                criticals/fumbles more often or ingredients for spells that cancel miscasts.
-      dialogOptions - Data for rendering the dialog that's important for a specific test type.
-                      Example: when casting or channelling, there should be an option for Malignant
-                      Influences, but only for those tests.
-      cardOptions - Which card to use, the title of the card, the name of the actor, etc.
-  /* --------------------------------------------------------------------------------------------------------- */
-
-  /**
-   * Setup a Characteristic Test.
-   *
-   * Characteristics tests are the simplest test, all that needs considering is the target number of the
-   * characteristic being tested, and any modifiers the user enters.
-   *
-   * @param {String} characteristicId     The characteristic id (e.g. "ws") - id's can be found in config.js
-   *
-   */
   setupCharacteristic(characteristicId, options = {}) {
     let char = this.data.data.characteristics[characteristicId];
     let title = game.i18n.localize(char.label) + " " + game.i18n.localize("Test");
 
     let testData = {
       target : char.value,
-      hitLocation : false,
       extra : {
         size : this.data.data.details.size.value,
         options : options
       }
     };
-
-    if (options.rest)
-      testData.extra.options["tb"] = char.bonus;
-
-    // Default a WS or BS test to have hit location checked
-    if (characteristicId == "ws" || characteristicId == "bs")
-      testData.hitLocation = true;
 
     // Setup dialog data: title, template, buttons, prefilled data
     let dialogOptions = {
@@ -209,8 +67,6 @@ class Actorwfrp3 extends Actor {
       template : "/systems/wfrp3/templates/chat/characteristic-dialog.html",
       // Prefilled dialog data
       data : {
-        hitLocation : testData.hitLocation,
-        advantage : this.data.data.status.advantage.value || 0,
       },
       callback : (html, roll) => {
         // When dialog confirmed, fill testData dialog information
@@ -222,7 +78,6 @@ class Actorwfrp3 extends Actor {
         testData.slBonus =        Number(html.find('[name="slBonus"]').val());
         // Target value is the final value being tested against, after all modifiers and bonuses are added
         testData.target =         testData.target + testData.testModifier + testData.testDifficulty;
-        testData.hitLocation =    html.find('[name="hitLocation"]').is(':checked');
         let talentBonuses =       html.find('[name = "talentBonuses"]').val();
 
           // Combine all Talent Bonus values (their times taken) into one sum
@@ -234,11 +89,6 @@ class Actorwfrp3 extends Actor {
         roll(testData, cardOptions);
       }
     };
-
-    if (options.rest)
-    {
-      dialogOptions.data.testDifficulty = "average"
-    }
 
     // Call the universal cardOptions helper
     let cardOptions = this._setupCardOptions("systems/wfrp3/templates/chat/characteristic-card.html", title)
@@ -264,7 +114,6 @@ class Actorwfrp3 extends Actor {
   setupSkill(skill, options = {}) {
     let title = skill.name + " " + game.i18n.localize("Test");
     let testData = {
-      hitLocation : false,
       income : options.income,
       target: this.data.data.characteristics[skill.data.characteristic.value].value + skill.data.advances.value,
       extra : {
@@ -274,15 +123,6 @@ class Actorwfrp3 extends Actor {
       }
     };
 
-    // Default a WS, BS, Melee, or Ranged to have hit location checked
-    if (skill.data.characteristic.value == "ws" ||
-        skill.data.characteristic.value == "bs" ||
-        skill.name.includes(game.i18n.localize("NAME.Melee")) ||
-        skill.name.includes(game.i18n.localize("NAME.Ranged")))
-    {
-      testData.hitLocation = true;
-    }
-
     // Setup dialog data: title, template, buttons, prefilled data   
     let dialogOptions = {
       title: title,
@@ -290,7 +130,6 @@ class Actorwfrp3 extends Actor {
       // Prefilled dialog data
 
       data : {
-        hitLocation : testData.hitLocation,
         characteristicList : wfrp3.characteristics,
         characteristicToUse : skill.data.characteristic.value,
         advantage : this.data.data.status.advantage.value || 0
@@ -310,8 +149,6 @@ class Actorwfrp3 extends Actor {
         + testData.testModifier
         + testData.testDifficulty
         + skill.data.advances.value;
-
-        testData.hitLocation =    html.find('[name="hitLocation"]').is(':checked');
         let talentBonuses =       html.find('[name = "talentBonuses"]').val();
 
           // Combine all Talent Bonus values (their times taken) into one sum
@@ -368,7 +205,6 @@ class Actorwfrp3 extends Actor {
 
     let testData = {
       target : 0,
-      hitLocation : true,
       extra : { // Store this extra weapon/ammo data for later use
         weapon : wep,
         ammo : ammo,
@@ -481,7 +317,6 @@ class Actorwfrp3 extends Actor {
       template : "/systems/wfrp3/templates/chat/weapon-dialog.html",
       // Prefilled dialog data
       data : {
-        hitLocation : testData.hitLocation,
         skillCharList : skillCharList,
         slBonus : slBonus || 0,
         successBonus : successBonus || 0,
@@ -523,8 +358,6 @@ class Actorwfrp3 extends Actor {
           + skillUsed.data.advances.value;
         }
 
-        testData.hitLocation = html.find('[name="hitLocation"]').is(':checked');
-
         let talentBonuses = html.find('[name = "talentBonuses"]').val();
 
         // Combine all Talent Bonus values (their times taken) into one sum
@@ -557,480 +390,6 @@ class Actorwfrp3 extends Actor {
       testData : testData,
       cardOptions : cardOptions});
   }
-
-
-  /**
-   * Display a dialog for the user to choose casting or channelling.
-   *
-   * When clicking on a spell, the user will get an option to Cast or Channel that spell
-   * Each option leads to their respective "setup" functions.
-   *
-   * @param {Object} spell     The spell item clicked on, petty spells will automatically be Casted, without the option to channel.
-   *
-   */
-  spellDialog(spell, options={}) {
-    // Do not show the dialog for Petty spells, just cast it.
-    if (spell.data.lore.value == "petty")
-      this.setupCast(spell)
-    else
-    {
-      renderTemplate("systems/wfrp3/templates/chat/cast-channel-dialog.html").then(dlg => {
-        new Dialog({
-          title: game.i18n.localize("ACTOR.CastOrChannel"),
-          content: dlg,
-          buttons: {
-            cast: {
-              label: game.i18n.localize("Cast"),
-              callback: btn => {
-                this.setupCast(spell);
-              }
-            },
-            channel: {
-              label: game.i18n.localize("Channel"),
-              callback: btn => {
-                this.setupChannell(spell);
-              }
-            },
-          },
-          default: 'cast'
-        }).render(true);
-      })
-    }
-  }
-
-  /**
-   * Setup a Casting Test.
-   *
-   * Casting tests are more complicated due to the nature of spell miscasts, ingredients, etc. Whatever ingredient
-   * is selected will automatically be used and negate one miscast. For the spell rolling logic, see DiceWFRP.rollCastTest
-   * where all this data is passed to in order to calculate the roll result.
-   *
-   * @param {Object} spell    The spell Item being Casted. The spell item has information like CN, lore, and current ingredient ID
-   *
-   */
-  setupCast(spell, options = {}) {
-    let title = game.i18n.localize("CastingTest") + " - " + spell.name;
-
-    // castSkill array holds the available skills/characteristics to cast with - Casting: Intelligence
-    let castSkills = [{key : "int", name : game.i18n.localize("CHAR.Int")}]
-
-    // if the actor has Language (Magick), add it to the array.
-    castSkills = castSkills.concat(this.items.filter(i => i.name.toLowerCase() == `${game.i18n.localize("Language")} (${game.i18n.localize("Magick")})`.toLowerCase() && i.type == "skill"))
-
-    // Default to Language Magick if it exists
-    let defaultSelection = castSkills.findIndex(i => i.name.toLowerCase() == `${game.i18n.localize("Language")} (${game.i18n.localize("Magick")})`.toLowerCase())
-
-    // Whether the actor has Instinctive Diction is important in the test rolling logic
-    let instinctiveDiction = false; // instinctive diction boolean
-
-    // Prepare the spell to have the complete data object, including damage values, range values, CN, etc.
-    let preparedSpell = this.prepareSpellOrPrayer(spell);
-    let testData = {
-      target : 0,
-      extra : { // Store this data to be used by the test logic
-        spell : preparedSpell,
-        malignantInfluence : false,
-        ingredient : false,
-        ID : instinctiveDiction,
-        size : this.data.data.details.size.value,
-        options : options
-      }
-    };
-
-    // If the spell does damage, default the hit location to checked
-    if (preparedSpell.damage)
-      testData.hitLocation = true;
-
-    // Setup dialog data: title, template, buttons, prefilled data
-    let dialogOptions = {
-      title: title,
-      template : "/systems/wfrp3/templates/chat/spell-dialog.html",
-      // Prefilled dialog data
-      data : {
-        hitLocation : testData.hitLocation,
-        malignantInfluence : testData.malignantInfluence,
-        advantage : this.data.data.status.advantage.value || 0,
-        defaultSelection : defaultSelection,
-        castSkills : castSkills
-      },
-      callback : (html, roll) => {
-        // When dialog confirmed, fill testData dialog information
-        // Note that this does not execute until DiceWFRP.prepareTest() has finished and the user confirms the dialog
-        cardOptions.rollMode =    html.find('[name="rollMode"]').val();
-        testData.testModifier =   Number(html.find('[name="testModifier"]').val());
-        testData.testDifficulty = wfrp3.difficultyModifiers[html.find('[name="testDifficulty"]').val()];
-        testData.successBonus =   Number(html.find('[name="successBonus"]').val());
-        testData.slBonus =        Number(html.find('[name="slBonus"]').val());
-
-        let skillSelected = castSkills[Number(html.find('[name="skillSelected"]').val())];
-
-        // If an actual skill (Language Magick) was selected, use that skill to calculate the target number
-        if (skillSelected.key != "int")
-        {
-          testData.target = this.data.data.characteristics[skillSelected.data.data.characteristic.value].value
-          + skillSelected.data.data.advances.value
-          + testData.testDifficulty
-          + testData.testModifier;
-        }
-        else // if a characteristic was selected, use just the characteristic
-        {
-          testData.target = this.data.data.characteristics.int.value
-          + testData.testDifficulty
-          + testData.testModifier;
-        }
-
-        testData.hitLocation = html.find('[name="hitLocation"]').is(':checked');
-        testData.extra.malignantInfluence = html.find('[name="malignantInfluence"]').is(':checked');
-
-        let talentBonuses = html.find('[name = "talentBonuses"]').val();
-        // Combine all Talent Bonus values (their times taken) into one sum
-        testData.successBonus += talentBonuses.reduce(function (prev, cur){
-          return prev + Number(cur)
-        }, 0)
-
-        // Find ingredient being used, if any
-        let ing = duplicate(this.getEmbeddedEntity("OwnedItem", testData.extra.spell.data.currentIng.value))
-        if (ing)
-        {
-          // Decrease ingredient quantity
-          testData.extra.ingredient = true;
-          ing.data.quantity.value--;
-          this.updateEmbeddedEntity("OwnedItem", ing);
-        }
-        // If quantity of ingredient is 0, disregard the ingredient
-        else if (!ing || ing.data.data.quantity.value <= 0)
-          testData.extra.ingredient = false;
-
-        // Use the assigned roll function (see below for how rollOverride is assigned, and then
-        // DiceWFRP.prepareTest() for more info on how the override is used, if any)
-        roll(testData, cardOptions);
-      },
-      // Override the default test evaluation to use specialized rollCastTest function
-      rollOverride : this.constructor.castOverride
-    };
-
-    // Call the universal cardOptions helper
-    let cardOptions = this._setupCardOptions("systems/wfrp3/templates/chat/spell-card.html", title)
-
-    // Provide these 3 objects to prepareTest() to create the dialog and assign the roll function
-    DiceWFRP.prepareTest({
-      dialogOptions : dialogOptions,
-      testData : testData,
-      cardOptions : cardOptions});
-  }
-
-  /**
-   * Setup a Channelling Test.
-   *
-   * Channelling tests are more complicated due to the nature of spell miscasts, ingredients, etc. Whatever ingredient
-   * is selected will automatically be used and mitigate miscasts. For the spell rolling logic, see DiceWFRP.rollChannellTest
-   * where all this data is passed to in order to calculate the roll result.
-   *
-   * @param {Object} spell    The spell Item being Channelled. The spell item has information like CN, lore, and current ingredient ID
-   * This spell SL will then be updated accordingly.
-   *
-   */
-  setupChannell(spell, options = {}){
-    let title = game.i18n.localize("ChannellingTest") +  " - " + spell.name;
-
-    // channellSkills array holds the available skills/characteristics to  with - Channelling: Willpower
-    let channellSkills = [{key : "wp", name : game.i18n.localize("CHAR.WP")}]
-
-    // if the actor has any channel skills, add them to the array.
-    channellSkills = channellSkills.concat(this.items.filter(i => i.name.toLowerCase().includes(game.i18n.localize("NAME.Channelling").toLowerCase()) && i.type == "skill"))
-
-    // Find the spell lore, and use that to determine the default channelling selection
-    let spellLore = spell.data.lore.value;
-    let defaultSelection 
-    if (spell.data.wind && spell.data.wind.value)
-    {
-      defaultSelection = channellSkills.indexOf(channellSkills.find(x => x.name.includes(spell.data.wind.value)))
-      if (defaultSelection == -1)
-      {
-        let customChannellSkill = this.items.find(i => i.name.toLowerCase().includes(spell.data.wind.value.toLowerCase()) && i.type == "skill");
-        if (customChannellSkill)
-        {
-          channellSkills.push(customChannellSkill)
-          defaultSelection =  channellSkills.length-1
-        }
-      }
-    }
-    else
-    {
-      defaultSelection = channellSkills.indexOf(channellSkills.find(x => x.name.includes(wfrp3.magicWind[spellLore])));
-    }
-
-    if (spellLore == "witchcraft")
-      defaultSelection = channellSkills.indexOf(channellSkills.find(x => x.name.toLowerCase().includes(game.i18n.localize("NAME.Channelling").toLowerCase())))
-
-    // Whether the actor has Aethyric Attunement is important in the test rolling logic
-    let aethyricAttunement = false; // aethyric attunement boolean
-
-    let testData = {
-      target : 0,
-      extra : { // Store data to be used by the test logic
-        spell : this.prepareSpellOrPrayer(spell),
-        malignantInfluence : false,
-        ingredient : false,
-        AA : aethyricAttunement,
-        size : this.data.data.details.size.value,
-        options : options
-      }
-    };
-
-    // Setup dialog data: title, template, buttons, prefilled data
-    let dialogOptions = {
-      title: title,
-      template : "/systems/wfrp3/templates/chat/channel-dialog.html",
-      // Prefilled dialog data
-      data : {
-        malignantInfluence : testData.malignantInfluence,
-        channellSkills : channellSkills,
-        defaultSelection: defaultSelection,
-        advantage : "N/A"
-      },
-      callback : (html, roll) => {
-          // When dialog confirmed, fill testData dialog information
-        // Note that this does not execute until DiceWFRP.prepareTest() has finished and the user confirms the dialog
-        cardOptions.rollMode =    html.find('[name="rollMode"]').val();
-        testData.testModifier =   Number(html.find('[name="testModifier"]').val());
-        testData.testDifficulty = wfrp3.difficultyModifiers[html.find('[name="testDifficulty"]').val()];
-        testData.successBonus =   Number(html.find('[name="successBonus"]').val());
-        testData.slBonus =        Number(html.find('[name="slBonus"]').val());
-        testData.extra.malignantInfluence = html.find('[name="malignantInfluence"]').is(':checked');
-
-        let skillSelected = channellSkills[Number(html.find('[name="skillSelected"]').val())];
-        // If an actual Channelling skill was selected, use that skill to calculate the target number
-        if (skillSelected.key != "wp")
-        {
-          testData.target = testData.testModifier + testData.testDifficulty
-                            + this.data.data.characteristics[skillSelected.data.data.characteristic.value].value
-                            + skillSelected.data.data.advances.value
-          testData.extra.channellSkill = skillSelected.data
-        }
-        else // if the ccharacteristic was selected, use just the characteristic
-          testData.target = testData.testModifier + testData.testDifficulty + this.data.data.characteristics.wp.value
-
-        let talentBonuses = html.find('[name = "talentBonuses"]').val();
-        // Combine all Talent Bonus values (their times taken) into one sum
-        testData.successBonus += talentBonuses.reduce(function (prev, cur){
-          return prev + Number(cur)
-        }, 0)
-
-
-        // Find ingredient being used, if any
-        let ing = duplicate(this.getEmbeddedEntity("OwnedItem", testData.extra.spell.data.currentIng.value))
-        if (ing)
-        {
-          // Decrease ingredient quantity
-          testData.extra.ingredient = true;
-          ing.data.quantity.value--;
-          this.updateEmbeddedEntity("OwnedItem", ing);
-        }
-        // If quantity of ingredient is 0, disregard the ingredient
-        else if(!ing || ing.data.data.quantity.value <= 0)
-          testData.extra.ingredient = false;
-
-        // Use the assigned roll function (see below for how rollOverride is assigned, and then
-        // DiceWFRP.prepareTest() for more info on how the override is used, if any)
-        roll(testData, cardOptions);
-      },
-      // Override the default test evaluation to use specialized rollCastTest function
-      rollOverride : this.constructor.channellOverride
-    };
-
-    // Call the universal cardOptions helper
-    let cardOptions = this._setupCardOptions("systems/wfrp3/templates/chat/channel-card.html", title)
-
-    // Provide these 3 objects to prepareTest() to create the dialog and assign the roll function
-    DiceWFRP.prepareTest({
-      dialogOptions : dialogOptions,
-      testData : testData,
-      cardOptions : cardOptions});
-  }
-
-  /**
-   * Setup a Prayer Test.
-   *
-   * Prayer tests are fairly simple, with the main complexity coming from sin and wrath of the gods,
-   * the logic of which can be found in DiceWFRP.rollPrayerTest, where all this data here is passed
-   * to in order to calculate the roll result.
-   *
-   * @param {Object} prayer    The prayer Item being used, compared to spells, not much information
-   * from the prayer itself is needed.
-   */
-  setupPrayer(prayer, options = {}) {
-    let title = game.i18n.localize("PrayerTest") + " - " + prayer.name;
-
-    // ppraySkills array holds the available skills/characteristics to pray with - Prayers: Fellowship
-    let praySkills = [{key : "fel", name : game.i18n.localize("CHAR.Fel")}]
-
-    // if the actor has the Pray skill, add it to the array.
-    praySkills = praySkills.concat(this.items.filter(i => i.name.toLowerCase() == game.i18n.localize("NAME.Pray").toLowerCase() && i.type == "skill"));
-
-    // Default to Pray skill if available
-    let defaultSelection = praySkills.findIndex(i => i.name.toLowerCase() == game.i18n.localize("NAME.Pray").toLowerCase())
-
-    // Prepare the prayer to have the complete data object, including damage values, range values, etc.
-    let preparedPrayer = this.prepareSpellOrPrayer(prayer);
-    let testData = { // Store this data to be used in the test logic
-      target : 0,
-      hitLocation : false,
-      target : defaultSelection != -1 ? this.data.data.characteristics[praySkills[defaultSelection].data.data.characteristic.value].value + praySkills[defaultSelection].data.data.advances.value : this.data.data.characteristics.fel.value,
-      extra : {
-        prayer : preparedPrayer,
-        size : this.data.data.details.size.value,
-        sin: this.data.data.status.sin.value,
-        options : options
-      }
-    };
-
-
-    // If the spell does damage, default the hit location to checked
-    if (preparedPrayer.damage)
-      testData.hitLocation = true;
-
-    // Setup dialog data: title, template, buttons, prefilled data
-    let dialogOptions = {
-      title: title,
-      template : "/systems/wfrp3/templates/chat/prayer-dialog.html",
-      // Prefilled dialog data
-      data : {
-        hitLocation : testData.hitLocation,
-        advantage : this.data.data.status.advantage.value || 0,
-        praySkills : praySkills,
-        defaultSelection : defaultSelection
-      },
-      callback : (html, roll) => {
-        // When dialog confirmed, fill testData dialog information
-        // Note that this does not execute until DiceWFRP.prepareTest() has finished and the user confirms the dialog
-        cardOptions.rollMode =    html.find('[name="rollMode"]').val();
-        testData.testModifier =   Number(html.find('[name="testModifier"]').val());
-        testData.testDifficulty = wfrp3.difficultyModifiers[html.find('[name="testDifficulty"]').val()];
-        testData.successBonus =   Number(html.find('[name="successBonus"]').val());
-        testData.slBonus =        Number(html.find('[name="slBonus"]').val());
-
-        let skillSelected = praySkills[Number(html.find('[name="skillSelected"]').val())];
-        // If an actual skill (Pray) was selected, use that skill to calculate the target number
-        if (skillSelected.key != "fel")
-        {
-          testData.target = this.data.data.characteristics[skillSelected.data.data.characteristic.value].value
-          + skillSelected.data.data.advances.value
-          + testData.testDifficulty
-          + testData.testModifier;
-        }
-        else // if a characteristic was selected, use just the characteristic
-        {
-          testData.target = this.data.data.characteristics.fel.value
-          + testData.testDifficulty
-          + testData.testModifier;
-        }
-
-        testData.hitLocation = html.find('[name="hitLocation"]').is(':checked');
-
-        let talentBonuses = html.find('[name = "talentBonuses"]').val();
-        // Combine all Talent Bonus values (their times taken) into one sum
-        testData.successBonus += talentBonuses.reduce(function (prev, cur){
-          return prev + Number(cur)
-        }, 0)
-
-        // Use the assigned roll function (see below for how rollOverride is assigned, and then
-        // DiceWFRP.prepareTest() for more info on how the override is used, if any)
-        roll(testData, cardOptions);
-      },
-      // Override the default test evaluation to use specialized rollPrayerTest function
-      rollOverride : this.constructor.prayerOverride
-    };
-
-    // Call the universal cardOptions helper
-    let cardOptions = this._setupCardOptions("systems/wfrp3/templates/chat/prayer-card.html", title)
-
-    // Provide these 3 objects to prepareTest() to create the dialog and assign the roll function
-    DiceWFRP.prepareTest({
-      dialogOptions : dialogOptions,
-      testData : testData,
-      cardOptions : cardOptions});
-  }
-
-  /**
-   * Setup a Trait Test.
-   *
-   * Some traits are rollable, and so are assigned a rollable characteristic, this is where
-   * rolling those characteristics is setup. Additonally, sometimes these traits have a
-   * "Bonus characteristic" which in most all cases means what characteristic bonus to add
-   * to determine damage. See the logic in traitOverride.
-   *
-   * @param {Object} trait   The trait Item being used, containing which characteristic/bonus characteristic to use
-   */
-  setupTrait(trait, options={}) {
-    if (!trait.data.rollable.value)
-      return;
-    let title =   wfrp3.characteristics[trait.data.rollable.rollCharacteristic] + ` ${game.i18n.localize("Test")} - ` + trait.name;
-    let testData = {
-      hitLocation : false,
-      target : this.data.data.characteristics[trait.data.rollable.rollCharacteristic].value,
-      extra : { // Store this trait data for later use
-        trait : trait,
-        size : this.data.data.details.size.value,
-        options : options
-      }
-    };
-
-    // Default hit location checked if the rollable trait's characteristic is WS or BS
-    if (trait.data.rollable.rollCharacteristic == "ws" || trait.data.rollable.rollCharacteristic == "bs" )
-      testData.hitLocation = true;
-
-    // Setup dialog data: title, template, buttons, prefilled data
-    let dialogOptions = {
-      title: title,
-      template : "/systems/wfrp3/templates/chat/skill-dialog.html", // Reuse skill dialog
-      // Prefilled dialog data
-      data : {
-        hitLocation : testData.hitLocation,
-        characteristicList : wfrp3.characteristics,
-        characteristicToUse : trait.data.rollable.rollCharacteristic,
-        advantage : this.data.data.status.advantage.value || 0,
-        testDifficulty : trait.data.rollable.defaultDifficulty
-      },
-      callback : (html, roll) => {
-        // When dialog confirmed, fill testData dialog information
-        // Note that this does not execute until DiceWFRP.prepareTest() has finished and the user confirms the dialog
-        cardOptions.rollMode =    html.find('[name="rollMode"]').val();
-        testData.testModifier =   Number(html.find('[name="testModifier"]').val());
-        testData.testDifficulty = wfrp3.difficultyModifiers[html.find('[name="testDifficulty"]').val()];
-        testData.successBonus =   Number(html.find('[name="successBonus"]').val());
-        testData.slBonus =        Number(html.find('[name="slBonus"]').val());
-        let characteristicToUse = html.find('[name="characteristicToUse"]').val();
-        // Target value is the final value being tested against, after all modifiers and bonuses are added
-        testData.target = this.data.data.characteristics[characteristicToUse].value
-                              + testData.testModifier
-                              + testData.testDifficulty
-        testData.hitLocation = html.find('[name="hitLocation"]').is(':checked');
-        let talentBonuses =    html.find('[name = "talentBonuses"]').val();
-
-        // Combine all Talent Bonus values (their times taken) into one sum
-        testData.successBonus += talentBonuses.reduce(function (prev, cur){
-          return prev + Number(cur)
-        }, 0)
-
-        // Use the assigned roll function (see below for how rollOverride is assigned, and then
-        // DiceWFRP.prepareTest() for more info on how the override is used, if any)
-        roll(testData, cardOptions);
-        },
-      // Override the default test evaluation to use a specialized function to handle traits
-      rollOverride : this.constructor.traitOverride
-    };
-
-    // Call the universal cardOptions helper
-    let cardOptions = this._setupCardOptions("systems/wfrp3/templates/chat/skill-card.html", title)
-
-    // Provide these 3 objects to prepareTest() to create the dialog and assign the roll function
-    DiceWFRP.prepareTest({
-      dialogOptions : dialogOptions,
-      testData : testData,
-      cardOptions : cardOptions});
-  }
-
 
   /**
    * Universal card options for setup functions.
@@ -1101,7 +460,7 @@ class Actorwfrp3 extends Actor {
    * @param {Object} cardOptions      Data for the card display, title, template, etc.
    * @param {Object} rerenderMessage  The message to be updated (used if editing the chat card)
    */
-  static async  defaultRoll(testData, cardOptions, rerenderMessage = null) {
+  static async defaultRoll(testData, cardOptions, rerenderMessage = null) {
     testData = await DiceWFRP.rollDices(testData, cardOptions);
     let result = DiceWFRP.rollTest(testData);
     
@@ -1126,98 +485,6 @@ class Actorwfrp3 extends Actor {
 
     await DiceWFRP.renderRollCard(cardOptions, result, rerenderMessage).then(msg => {
       OpposedWFRP.handleOpposedTarget(msg) // Send to handleOpposed to determine opposed status, if any.
-    })
-  }
-
-  /**
-   * incomeOverride is used to add income calculation to Skill tests.
-   *
-   * Normal skill Tests just use defaultRoll() override, however, when testing Income, this override is used instead
-   * because it adds 'post processing' in the form of determining how much money was earned. See this.setupSkill()
-   * for how this override is assigned.
-   *
-   * @param {Object} testData         All the data needed to evaluate test results - see setupSkill()
-   * @param {Object} cardOptions      Data for the card display, title, template, etc.
-   * @param {Object} rerenderMessage  The message to be updated (used if editing the chat card)
-   */
-  static async incomeOverride(testData, cardOptions, rerenderMessage = null)
-  {
-    testData = await DiceWFRP.rollDices(testData, cardOptions);
-    let result = DiceWFRP.rollTest(testData);
-    result.postFunction = "incomeOverride"
-
-    Hooks.call("wfrp3:rollIncomeTest", result)
-
-
-    if (game.user.targets.size)
-    {
-      cardOptions.title += ` - ${game.i18n.localize("Opposed")}`,
-      cardOptions.isOpposedTest = true
-    }
-
-    let status = testData.income.value.split(' ')
-
-    let dieAmount = wfrp3.earningValues[WFRP_Utility.findKey(status[0], wfrp3.statusTiers)][0] // b, s, or g maps to 2d10, 1d10, or 1 respectively (takes the first letter)
-    dieAmount = Number(dieAmount) * status[1];     // Multilpy that first letter by your standing (Brass 4 = 8d10 pennies)
-    let moneyEarned;
-    if (WFRP_Utility.findKey(status[0], wfrp3.statusTiers) != "g") // Don't roll for gold, just use standing value
-    {
-      dieAmount = dieAmount + "d10";
-      moneyEarned = new Roll(dieAmount).roll().total;
-    }
-    else
-      moneyEarned = dieAmount;
-
-    // After rolling, determined how much, if any, was actually earned
-    if (result.description.includes("Success"))
-    {
-      result.incomeResult = game.i18n.localize("INCOME.YouEarn") + " " + moneyEarned;
-      switch (WFRP_Utility.findKey(status[0], wfrp3.statusTiers))
-      { 
-        case "b":
-          result.incomeResult += ` ${game.i18n.localize("NAME.BPPlural").toLowerCase()}.`
-          break;
-        case "s":
-          result.incomeResult += ` ${game.i18n.localize("NAME.SSPlural").toLowerCase()}.`
-          break;
-        case "g":
-            if (moneyEarned > 1)
-              result.incomeResult += ` ${game.i18n.localize("NAME.GC").toLowerCase()}.`
-            else
-              result.incomeResult += ` ${game.i18n.localize("NAME.GCPlural").toLowerCase()}.`
-            break;
-      }
-    }
-    else if (Number(result.SL) > -6)
-    {
-      moneyEarned /= 2;
-      result.incomeResult = game.i18n.localize("INCOME.YouEarn") + " " + moneyEarned;
-      switch (WFRP_Utility.findKey(status[0], wfrp3.statusTiers))
-      {
-        case "b":
-          result.incomeResult += ` ${game.i18n.localize("NAME.BPPlural").toLowerCase()}.`
-          break;
-        case "s":
-          result.incomeResult += ` ${game.i18n.localize("NAME.SSPlural").toLowerCase()}.`
-          break;
-        case "g":
-            if (moneyEarned > 1)
-              result.incomeResult += ` ${game.i18n.localize("NAME.GC").toLowerCase()}.`
-            else
-              result.incomeResult += ` ${game.i18n.localize("NAME.GCPlural").toLowerCase()}.`
-            break;
-      }
-    }
-    else
-    {
-      result.incomeResult = game.i18n.localize("INCOME.Failure")
-      moneyEarned = 0;
-    }
-    // let contextAudio = await WFRP_Audio.MatchContextAudio(WFRP_Audio.FindContext(result))
-    // cardOptions.sound = contextAudio.file || cardOptions.sound
-    result.moneyEarned = moneyEarned + WFRP_Utility.findKey(status[0], wfrp3.statusTiers);
-    await DiceWFRP.renderRollCard(cardOptions, result, rerenderMessage).then(msg => {
-      OpposedWFRP.handleOpposedTarget(msg)
     })
   }
 
@@ -1362,62 +629,6 @@ class Actorwfrp3 extends Actor {
     })
   }
 
-  /**
-   * traitOverride is used for Trait tests, see setupTrait for how it's assigned.
-   *
-   * Since traitOverride calls the generic DiceWFRP.rollTest(), which does not consider damage,
-   * some post processing must be done to calculate damage values.
-   *
-   * @param {Object} testData         All the data needed to evaluate test results - see setupTrait()
-   * @param {Object} cardOptions      Data for the card display, title, template, etc.
-   * @param {Object} rerenderMessage  The message to be updated (used if editing the chat card)
-   */
-  static async traitOverride(testData, cardOptions, rerenderMessage = null)
-  {
-    if (game.user.targets.size)
-    {
-      cardOptions.title += ` - ${game.i18n.localize("Opposed")}`,
-      cardOptions.isOpposedTest = true
-    }
-    testData = await DiceWFRP.rollDices(testData, cardOptions);
-    let result = DiceWFRP.rollTest(testData);
-    result.postFunction = "traitOverride";
-    try
-    {
-      // If the specification of a trait is a number, it's probably damage. (Animosity (Elves) - not a number specification: no damage)
-      if (!isNaN(testData.extra.trait.data.specification.value)) //         (Bite 7 - is a number specification, do damage)
-      {
-        testData.extra.damage = Number(result.SL) // Start damage off with SL
-
-        if (Number(testData.extra.trait.data.specification.value)) // Add the specification starting value
-          testData.extra.damage +=  Number(testData.extra.trait.data.specification.value)
-
-        if (testData.extra.trait.data.rollable.bonusCharacteristic) // Add the bonus characteristic (probably strength)
-          testData.extra.damage += Number(WFRP_Utility.getSpeaker(cardOptions.speaker).data.data.characteristics[testData.extra.trait.data.rollable.bonusCharacteristic].bonus) || 0;
-      }
-    }
-    catch (error)
-    {
-      ui.notifications.error(game.i18n.localize("CHAT.DamageError") + " " + error)
-    } // If something went wrong calculating damage, do nothing and still render the card
-
-    if (testData.extra)
-      mergeObject(result, testData.extra);
-
-   try {
-    let contextAudio = await WFRP_Audio.MatchContextAudio(WFRP_Audio.FindContext(result))
-    cardOptions.sound = contextAudio.file || cardOptions.sound
-   }
-   catch 
-   { }
-    Hooks.call("wfrp3:rollTraitTest", result)
-
-      await DiceWFRP.renderRollCard(cardOptions, result, rerenderMessage).then(msg => {
-        OpposedWFRP.handleOpposedTarget(msg) // Send to handleOpposed to determine opposed status, if any.
-      })
-  }
-
-
   /* --------------------------------------------------------------------------------------------------------- */
   /* --------------------------------- Preparation & Calculation Functions ----------------------------------- */
   /* --------------------------------------------------------------------------------------------------------- */
@@ -1474,19 +685,9 @@ class Actorwfrp3 extends Actor {
       }
     }
 
-    // Now that we have size, calculate wounds and token size
-    let wounds = this.calculateWounds(preparedData)
     let tokenSize = wfrp3.tokenSizes[preparedData.data.details.size.value]
     preparedData.isToken = !!this.token;
 
-    // If the max wounds has been changed since the last known value, update the value
-    if (preparedData.data.status.wounds.max != wounds && preparedData.flags.autoCalcWounds)
-    {
-      this.update({
-        "data.status.wounds.max" : wounds,
-        "data.status.wounds.value" : Number(wounds)
-      })
-    }
     try // If the token size has been changed (based on actual Actor size), update the value
     {
       // Different update process based on if token or not.
@@ -1499,20 +700,7 @@ class Actorwfrp3 extends Actor {
         this.update({"token.height" : tokenSize,"token.width" : tokenSize})
       }
     }
-    catch { }
-    
-    // Auto calculation flags - if the user hasn't disabled various autocalculated values, calculate them
-    if (preparedData.flags.autoCalcRun)
-    {
-      // This is specifically for the Stride trait, see prepareData() for the other auto-calc movement values
-      if(preparedData.traits.find(t => t.name.toLowerCase() == game.i18n.localize("NAME.Stride").toLowerCase()))
-        preparedData.data.details.move.run += preparedData.data.details.move.walk;
-    }
-    // ------------------------ Talent Modifications ------------------------
-    // These consist of Strike Mighty Blow, Accurate Shot, and Robust. Each determines
-    // how many advances there are according to preparedData, then modifies the flag value
-    // if there's any difference.
-
+    catch { }    
     return preparedData;
   }
 
@@ -1535,69 +723,16 @@ class Actorwfrp3 extends Actor {
       return this.prepare()
     }
 
-    let untrainedSkills = []
-    let untrainedTalents = []
     let hasCurrentCareer = false;
-    this.data.flags.careerTalents = [];
     // For each career, find the current one, and set the details accordingly (top of the character sheet)
     // Additionally, set available characteristics, skills, and talents to advance (advancement indicator)
     for (let career of actorData.careers)
     {
       if (career.data.current.value)
       {
-        hasCurrentCareer = true; // Used to remove indicators if no current career
-
-        // Setup Character detail values
-        actorData.currentClass = career.data.class.value;
-        actorData.currentCareer = career.name;
-        actorData.currentCareerGroup = career.data.careergroup.value;
-
-        if (!actorData.data.details.status.value) // backwards compatible with moving this to the career change handler
-          actorData.data.details.status.value = wfrp3.statusTiers[career.data.status.tier] + " " + career.data.status.standing;
-
-        // Setup advancement indicators for characteristics
-        let availableCharacteristics = career.data.characteristics
-        for (let char in actorData.data.characteristics)
-        {
-          if (availableCharacteristics.includes(char))
-            actorData.data.characteristics[char].career = true;
-        }
-
-        // Find skills that have been trained or haven't, add advancement indicators or greyed out options (untrainedSkills)
-        for (let sk of career.data.skills)
-        {
-          let trainedSkill = actorData.basicSkills.concat(actorData.advancedOrGroupedSkills).find(s => s.name.toLowerCase() == sk.toLowerCase())
-          if (trainedSkill)
-          {
-            trainedSkill.career = true;
-          }
-          else
-          {
-            untrainedSkills.push(sk);
-          }
-        }
+        hasCurrentCareer = true;
       }
     }
-
-    // Remove advancement indicators if no current career
-    if (!hasCurrentCareer)
-    {
-      for (let char in actorData.data.characteristics)
-        actorData.data.characteristics[char].career = false;
-    }
-
-    //Add advancement indicators
-    actorData.basicSkills.forEach(skill => skill.career = skill.flags.forceAdvIndicator ? true:skill.career);
-    actorData.advancedOrGroupedSkills.forEach(skill => skill.career = skill.flags.forceAdvIndicator ? true:skill.career);
-    let that = this;
-    actorData.talents.forEach(function(talent){
-      if(!talent.career)
-        that.data.flags.careerTalents.push(talent);
-      talent.career = talent.flags.forceAdvIndicator ? true:talent.career;
-    });
-    // Add arrays to prepared actotr datas
-    actorData.untrainedSkills = untrainedSkills;
-    actorData.untrainedTalents = untrainedTalents;
   }
 
   /**
@@ -1633,40 +768,6 @@ class Actorwfrp3 extends Actor {
     {
       return this.prepare()
     }
-
-    // mark each trait as included or not
-    for (let trait of actorData.traits)
-    {
-      if (actorData.data.excludedTraits.includes(trait._id))
-      {
-        trait.included = false;
-      }
-      else
-      {
-        trait.included = true;
-      }
-    }
- 
-    // notes traits is all traits - for display in the notes tab
-    actorData.notesTraits = actorData.traits.sort(WFRP_Utility.nameSorter);
-    // "traits" is only included traits 
-    actorData.traits = actorData.traits.filter(t => t.included);
- 
-    // Combine all skills into a skill array (for creatur overview in the maintab)
-    actorData.skills = (actorData.basicSkills.concat(actorData.advancedOrGroupedSkills)).sort(WFRP_Utility.nameSorter);
-    // Filter those skills by those trained (only show skills with an advancement in the main tab)
-    actorData.trainedSkills = actorData.skills.filter(s => s.data.advances.value > 0) 
- 
-    for (let weapon of actorData.weapons)
-    {
-      try // For each weapon, if it has ammo equipped, add the ammo name to the weapon
-      {   // This is needed because we can't have both ammo dropdowns functional in the main tab and the combat tab easily
-        if (weapon.data.currentAmmo.value)
-          weapon.ammoName = actorData.inventory.ammunition.items.find(a => a._id == weapon.data.currentAmmo.value).name;
-      }
-      catch
-      {}
-    }
   }
 
   /**
@@ -1684,18 +785,11 @@ class Actorwfrp3 extends Actor {
     let actorData = duplicate(this.data)
     // These containers are for the various different tabs
     const careers = [];
-    const basicSkills = [];
-    const advancedOrGroupedSkills = [];
     const talents = [];
-    const traits = [];
     const cards = [];
     const weapons = [];
     const armour = [];
     const injuries = [];
-    const grimoire = [];
-    const petty = [];
-    const blessings = [];
-    const miracles = [];
     const psychology = [];
     const mutations = [];
     const diseases = [];
@@ -1714,34 +808,6 @@ class Actorwfrp3 extends Actor {
         value: ""
       },
     };
-
-    const AP = {
-      head: {
-        value: 0,
-        layers: [],
-      },
-      body: {
-        value: 0,
-        layers: [],
-      },
-      rArm: {
-        value: 0,
-        layers: [],
-      },
-      lArm: {
-        value: 0,
-        layers: [],
-      },
-      rLeg: {
-        value: 0,
-        layers: [],
-      },
-      lLeg: {
-        value: 0,
-        layers: [],
-      },
-      shield: 0
-    }
 
     // Inventory object is for the Trappings tab - each sub object is for an individual inventory section
     const inventory = {
@@ -1825,16 +891,12 @@ class Actorwfrp3 extends Actor {
     };
     const inContainers = []; // inContainers is the temporary storage for items within a container
 
-
     let totalEnc = 0;         // Total encumbrance of items
-    let hasSpells = false;    // if the actor has atleast a single spell - used to display magic tab
-    let hasPrayers = false;   // if the actor has atleast a single prayer - used to display religion tab
-    let defensiveCounter = 0; // Counter for weapons with the defensive quality
 
     // Iterate through items, allocating to containers
     // Items that need more intense processing are sent to a specialized function (see preparation functions below)
-    // Physical items are also placed into containers instead of the inventory object if their 'location' is not 0
-    // A location of 0 means not in a container, otherwise, the location corresponds to the id of the container the item is in
+    // Physical items are also placed into containers instead of the inventory object if their 'container' is not 0
+    // A container of 0 means not in a container, otherwise, the container corresponds to the id of the container the item is in
     for (let i of actorData.items) 
     {
       try 
@@ -1845,28 +907,18 @@ class Actorwfrp3 extends Actor {
         if (i.type === "talent") 
         {
           this.prepareTalent(i, talents);
-        } 
+        }
 
         else if (i.type === "card")
         {
           this.prepareCard(i, cards);
         }
 
-        // *********** Skills ***********
-        else if (i.type === "skill") 
-        {
-          this.prepareSkill(i);
-          if (i.data.grouped.value == "isSpec" || i.data.advanced.value == "adv")
-            advancedOrGroupedSkills.push(i)
-          else
-            basicSkills.push(i);
-        } 
-
         // *********** Ammunition ***********
         else if (i.type === "ammunition") 
         {
           i.encumbrance = (i.data.encumbrance.value * i.data.quantity.value).toFixed(2);
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
             inventory.ammunition.items.push(i);
             inventory.ammunition.show = true
@@ -1876,14 +928,14 @@ class Actorwfrp3 extends Actor {
           {
             inContainers.push(i);
           }
-        } 
+        }
 
         // *********** Weapons ***********
         // Weapons are "processed" at the end for efficency
         else if (i.type === "weapon") 
         {
           i.encumbrance = Math.floor(i.data.encumbrance.value * i.data.quantity.value);
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
             i.toggleValue = i.data.equipped || false;
             inventory.weapons.items.push(i);
@@ -1901,10 +953,10 @@ class Actorwfrp3 extends Actor {
         else if (i.type === "armour") 
         {
           i.encumbrance = Math.floor(i.data.encumbrance.value * i.data.quantity.value);
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
-            i.toggleValue = i.data.worn.value || false;
-            if (i.data.worn.value) 
+            i.toggleValue = i.data.equipped.value || false;
+            if (i.data.equipped.value) 
             {
               i.encumbrance = i.encumbrance - 1;
               i.encumbrance = i.encumbrance < 0 ? 0 : i.encumbrance;
@@ -1918,9 +970,8 @@ class Actorwfrp3 extends Actor {
             inContainers.push(i);
           }
 
-          if (i.data.worn.value)
-            armour.push(this.prepareArmorCombat(i, AP));
-
+          if (i.data.equipped.value)
+            armour.push(this.prepareArmorCombat(i));
         } 
         // *********** Injuries ***********
         else if (i.type == "injury") 
@@ -1942,9 +993,9 @@ class Actorwfrp3 extends Actor {
         {
           i.encumbrance = i.data.encumbrance.value;
 
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
-            if (i.data.worn.value) 
+            if (i.data.equipped.value) 
             {
               i.encumbrance = i.encumbrance - 1;
               i.encumbrance = i.encumbrance < 0 ? 0 : i.encumbrance;
@@ -1957,7 +1008,7 @@ class Actorwfrp3 extends Actor {
           }
           containers.items.push(i);
           containers.show = true;
-        } 
+        }
 
         // *********** Trappings ***********
         // Trappings have several sub-categories, most notably Ingredients
@@ -1965,7 +1016,7 @@ class Actorwfrp3 extends Actor {
         else if (i.type === "trapping") 
         {
           i.encumbrance = i.data.encumbrance.value * i.data.quantity.value;
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
             // Push ingredients to a speciality array for futher customization in the trappings tab
             if (i.data.trappingType.value == "ingredient") 
@@ -1975,10 +1026,10 @@ class Actorwfrp3 extends Actor {
             // The trapping will fall into one of these if statements and set the array accordingly
             else if (i.data.trappingType.value == "clothingAccessories")
             {
-              i.toggleValue = i.data.worn || false;
+              i.toggleValue = i.data.equipped.value || false;
               inventory[i.data.trappingType.value].items.push(i);
               inventory[i.data.trappingType.value].show = true;
-              if (i.data.worn) 
+              if (i.data.equipped.value) 
               {
                 i.encumbrance = i.encumbrance - 1;                      // Since some trappings are worn, they need special treatment
                 i.encumbrance = i.encumbrance < 0 ? 0 : i.encumbrance;  // This if statement is specific to worn clothing Trappings
@@ -2007,49 +1058,12 @@ class Actorwfrp3 extends Actor {
           }
         } 
 
-        // *********** Spells ***********
-        // See this.prepareSpellOrPrayer() for how these items are processed 
-        else if (i.type === "spell")
-        {
-          hasSpells = true;
-          if (i.data.lore.value == "petty")
-            petty.push(this.prepareSpellOrPrayer(i));
-          else
-            grimoire.push(this.prepareSpellOrPrayer(i));
-        } 
-        // *********** Prayers ***********
-        // See this.prepareSpellOrPrayer() for how these items are processed 
-        else if (i.type === "prayer")
-        {
-          hasPrayers = true;
-          if (i.data.type.value == "blessing")
-            blessings.push(this.prepareSpellOrPrayer(i));
-          else
-            miracles.push(this.prepareSpellOrPrayer(i));
-        }
-
         // *********** Careers ***********   
         else if (i.type === "career") 
         {
           careers.push(i);
         } 
-
-        // *********** Trait ***********   
-        // Display Traits as Trait-Name (Specification)
-        // Such as Animosity (Elves)
-        else if (i.type === "trait") 
-        {
-          if (i.data.specification.value) 
-          {
-            if (i.data.rollable.bonusCharacteristic)  // Bonus characteristic adds to the specification (Weapon +X includes SB for example)
-            {
-              i.data.specification.value = parseInt(i.data.specification.value) || 0
-              i.data.specification.value += actorData.data.characteristics[i.data.rollable.bonusCharacteristic].bonus;
-            }
-            i.name = i.name + " (" + i.data.specification.value + ")";
-          }
-          traits.push(i);
-        } 
+ 
         // *********** Psychologies ***********   
         else if (i.type === "psychology") 
         {
@@ -2070,8 +1084,6 @@ class Actorwfrp3 extends Actor {
         else if (i.type === "mutation") 
         {
           mutations.push(i);
-          if (i.data.modifiesSkills.value)
-            penalties[game.i18n.localize("Mutation")].value += i.data.modifier.value;
         } 
 
         // *********** Money ***********   
@@ -2079,7 +1091,7 @@ class Actorwfrp3 extends Actor {
         else if (i.type === "money") 
         {
           i.encumbrance = (i.data.encumbrance.value * i.data.quantity.value).toFixed(2);
-          if (i.data.location.value == 0) 
+          if (i.data.container.value == "0")
           {
             money.coins.push(i);
             totalEnc += Number(i.encumbrance);
@@ -2094,6 +1106,7 @@ class Actorwfrp3 extends Actor {
       catch (error) 
       {
         console.error("Something went wrong with preparing item " + i.name + ": " + error)
+        console.log(error);
         ui.notifications.error("Something went wrong with preparing item " + i.name + ": " + error)
        // ui.notifications.error("Deleting " + i.name);
        // this.deleteEmbeddedEntity("OwnedItem", i._id);
@@ -2102,50 +1115,25 @@ class Actorwfrp3 extends Actor {
 
     // Prepare weapons for combat after items passthrough for efficiency - weapons need to know the ammo possessed, so instead of iterating through
     // all items to find, iterate through the inventory.ammo array we just made
-    let totalShieldDamage = 0; // Used for damage tooltip
     for (let wep of inventory.weapons.items) 
     {
       // We're only preparing equipped items here - this is for displaying weapons in the combat tab after all
       if (wep.data.equipped) 
       {
         // Process weapon taking into account actor data, skills, and ammo
-        weapons.push(this.prepareWeaponCombat(wep, inventory.ammo, basicSkills.concat(advancedOrGroupedSkills)));
-        // Add shield AP to AP object
-        let shieldProperty = wep.properties.qualities.find(q => q.toLowerCase().includes(game.i18n.localize("PROPERTY.Shield").toLowerCase()))
-        if (shieldProperty) 
-        {
-          let shieldDamage = wep.data.APdamage || 0;
-          AP.shield += (parseInt(shieldProperty.split(" ")[1]) - shieldDamage);
-          totalShieldDamage += shieldDamage;
-        }
-        // Keep a running total of defensive weapons equipped
-        if (wep.properties.qualities.find(q => q.toLowerCase().includes(game.i18n.localize("PROPERTY.Defensive").toLowerCase()))) 
-        {
-          defensiveCounter++;
-        }
+        weapons.push(this.prepareWeaponCombat(wep, inventory.ammo));
+        // Add shield AP to AP object        
       }
     }
 
-
-    // If you have no spells, just put all ingredients in the miscellaneous section, otherwise, setup the ingredients to be available
-    if (grimoire.length > 0 && ingredients.items.length > 0) 
-    {
-      ingredients.show = true;
-      // For each spell, set available ingredients to ingredients that have been assigned to that spell
-      for (let s of grimoire)
-        s.data.ingredients = ingredients.items.filter(i => i.data.spellIngredient.value == s._id && i.data.quantity.value > 0)
-    } 
-    else
-      inventory.misc.items = inventory.misc.items.concat(ingredients.items);
-
-
+    inventory.misc.items = inventory.misc.items.concat(ingredients.items);
 
     // ******************************** Container Setup ***********************************
 
     // containerMissing is an array of items whose container does not exist (needed for when a container is deleted)
-    var containerMissing = inContainers.filter(i => !containers.items.find(c => c._id == i.data.location.value));
+    var containerMissing = inContainers.filter(i => !containers.items.find(c => c._id == i.data.container.value));
     for (var itemNoContainer of containerMissing) // Reset all items without container references (items that were removed from a contanier)
-      itemNoContainer.data.location.value = 0;
+      itemNoContainer.data.container.value = "0";
     
     // If there were missing containers, reset the items that are orphaned
     if (containerMissing.length)
@@ -2154,7 +1142,7 @@ class Actorwfrp3 extends Actor {
     for (var cont of containers.items) // For each container
     {
       // All items referencing (inside) that container
-      var itemsInside = inContainers.filter(i => i.data.location.value == cont._id);
+      var itemsInside = inContainers.filter(i => i.data.container.value == cont._id);
       itemsInside.map(function (item) 
       { // Add category of item to be displayed
         if (item.type == "trapping")
@@ -2170,7 +1158,7 @@ class Actorwfrp3 extends Actor {
       cont.holding = Math.floor(cont.holding)
     }
 
-    containers.items = containers.items.filter(c => c.data.location.value == 0); // Do not show containers inside other containers as top level (a location value of 0 means not inside a container)
+    containers.items = containers.items.filter(c => c.data.container.value == "0"); // Do not show containers inside other containers as top level (a container value of 0 means not inside a container)
     
     
     // ******************************** Penalties Setup ***********************************        
@@ -2178,8 +1166,7 @@ class Actorwfrp3 extends Actor {
     // Penalties box setup
     // If too much text, divide the penalties into groups
     let penaltiesOverflow = false;
-    penalties[game.i18n.localize("Armour")].value += this.calculateArmorPenalties(armour);
-    if ((penalties[game.i18n.localize("Armour")].value + penalties[game.i18n.localize("Mutation")].value + penalties[game.i18n.localize("Injury")].value + penalties[game.i18n.localize("Criticals")].value).length > 50) // ~50 characters is when the text box overflows
+    if ((penalties[game.i18n.localize("Mutation")].value + penalties[game.i18n.localize("Injury")].value + penalties[game.i18n.localize("Criticals")].value).length > 50) // ~50 characters is when the text box overflows
     {                                                                                                                                     // When that happens, break it up into categories 
       penaltiesOverflow = true;
       for (let penaltyType in penalties) 
@@ -2192,34 +1179,12 @@ class Actorwfrp3 extends Actor {
     }
 
     // Penalties flag is teh string that shows when the actor's turn in combat starts
-    let penaltiesFlag = penalties[game.i18n.localize("Armour")].value + " " + penalties[game.i18n.localize("Mutation")].value + " " + penalties[game.i18n.localize("Injury")].value + " " + penalties[game.i18n.localize("Criticals")].value + " " + this.data.data.status.penalties.value
+    let penaltiesFlag = penalties[game.i18n.localize("Mutation")].value + " " + penalties[game.i18n.localize("Injury")].value + " " + penalties[game.i18n.localize("Criticals")].value + " " + this.data.data.status.penalties.value
     penaltiesFlag = penaltiesFlag.trim();
 
     // This is for the penalty string in flags, for combat turn message
     if (this.data.flags.modifier != penaltiesFlag)
       this.update({"flags.modifier": penaltiesFlag})
-
-    // Add armor trait to AP object
-    let armorTrait = traits.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Armour").toLowerCase()))
-    if (armorTrait && (!this.data.data.excludedTraits || !this.data.data.excludedTraits.includes(armorTrait._id))) 
-    {
-      for (let loc in AP) 
-      {
-        try 
-        {
-          let traitDamage = 0;
-          if (armorTrait.APdamage)
-            traitDamage = armorTrait.APdamage[loc] || 0;
-          if (loc != "shield")
-            AP[loc].value += (parseInt(armorTrait.data.specification.value) || 0) - traitDamage;
-        } 
-        catch {//ignore armor traits with invalid values
-        }
-      }
-    }
-
-    // keep defensive counter in flags to use for test auto fill (see setupWeapon())
-    this.data.flags.defensive = defensiveCounter;
 
     // enc used for encumbrance bar in trappings tab
     let enc;
@@ -2253,10 +1218,7 @@ class Actorwfrp3 extends Actor {
     let preparedData = {
       inventory: inventory,
       containers: containers,
-      basicSkills: basicSkills.sort(WFRP_Utility.nameSorter),
-      advancedOrGroupedSkills: advancedOrGroupedSkills.sort(WFRP_Utility.nameSorter),
       talents: talents,
-      traits: traits,
       cards: cards,
       weapons: weapons,
       diseases: diseases,
@@ -2264,60 +1226,18 @@ class Actorwfrp3 extends Actor {
       armour: armour,
       penalties: penalties,
       penaltyOverflow: penaltiesOverflow,
-      AP: AP,
       injuries: injuries,
-      grimoire: grimoire,
-      petty: petty,
       careers: careers.reverse(),
-      blessings: blessings,
-      miracles: miracles,
       money: money,
       psychology: psychology,
       criticals: criticals,
       criticalCount: criticals.length,
       encumbrance: enc,
-      ingredients: ingredients,
-      totalShieldDamage : totalShieldDamage,
-      ["flags.hasSpells"]: hasSpells,
-      ["flags.hasPrayers"]: hasPrayers
+      ingredients: ingredients
     }
     return preparedData
   }
   
-  /**
-   * Prepares a skill Item.
-   * 
-   * Preparation of a skill is simply determining the `total` value, which is the base characteristic + advances.
-   * 
-   * @param   {Object} skill    'skill' type Item 
-   * @return  {Object} skill    Processed skill, with total value calculated
-   */
-  prepareSkill(skill) 
-  {
-    let actorData = this.data
-    skill.data.characteristic.num = actorData.data.characteristics[skill.data.characteristic.value].value;
-    // Characteristic Total + Skill Advancement = Skill Total
-    skill.data.total.value = actorData.data.characteristics[skill.data.characteristic.value].value + skill.data.advances.value;
-    skill.data.characteristic.abrev = wfrp3.characteristicsAbbrev[skill.data.characteristic.value];
-    skill.data.cost = WFRP_Utility._calculateAdvCost(skill.data.advances.value, "skill")
-    return skill
-   }
-
-   /**
-    * 
-    * Prepares a talent Item.
-    * 
-    * Prepares a talent with actor data and other talents. Two different ways to prepare a talent:
-    * 
-    * 1. If a talent with the same name is already prepared, don't prepare this talent and instead
-    * add to the advancements of the existing talent.
-    * 
-    * 2. If the talent does not exist yet, turn its "Max" value into "numMax", in other words, turn
-    * "Max: Initiative Bonus" into an actual number value.
-    * 
-    * @param {Object} talent      'talent' type Item.
-    * @param {Array}  talentList  List of talents prepared so far. Prepared talent is pushed here instead of returning.
-    */
    prepareTalent(talent, talentList) 
    {
       talentList.push(talent);
@@ -2327,69 +1247,30 @@ class Actorwfrp3 extends Actor {
    {
     cardsList.push(card);
    }
-   /**
-    * Prepares a weapon Item.
-    * 
-    * Prepares a weapon using actor data, ammunition, properties, and flags. The weapon's raw
-    * data is turned into more user friendly / meaningful data with either config values or
-    * calculations. Also turns all qualities/flaws into a more structured object.
-    * 
-    * @param  {Object} weapon      'weapon' type Item
-    * @param  {Array}  ammoList    array of 'ammo' type Items
-    * @param  {Array}  skills      array of 'skill' type Items
-    * 
-    * @return {Object} weapon      processed weapon
-    */
-  prepareWeaponCombat(weapon, ammoList, skills)
+
+  prepareWeaponCombat(weapon, ammoList)
   {
     let actorData = this.data
 
-    if (!skills) // If a skill list isn't provided, filter all items to find skills
-      skills = actorData.items.filter(i => i.type == "skill");
-
     weapon.attackType = wfrp3.groupToType[weapon.data.weaponGroup.value]
-    weapon.data.reach.value = wfrp3.weaponReaches[weapon.data.reach.value];
     weapon.data.weaponGroup.value = wfrp3.weaponGroups[weapon.data.weaponGroup.value] || "basic";
 
-    // Attach the available skills to use to the weapon.
-    weapon.skillToUse = skills.find(x => x.name.toLowerCase().includes(`(${weapon.data.weaponGroup.value.toLowerCase()})`))
+    // TODO: look for specialization
+    //weapon.skillToUse = skills.find(x => x.name.toLowerCase().includes(`(${weapon.data.weaponGroup.value.toLowerCase()})`))
     
     // prepareQualitiesFlaws turns the comma separated qualities/flaws string into a string array
     // Does not include qualities if no skill could be found above
-    weapon["properties"] = WFRP_Utility._prepareQualitiesFlaws(weapon, !!weapon.skillToUse);
+    weapon["properties"] = [];
 
-    // Special flail rule - if no skill could be found, add the Dangerous property
-    if (weapon.data.weaponGroup.value == game.i18n.localize("SPEC.Flail") && !weapon.skillToUse && !weapon.properties.includes(game.i18n.localize("PROPERTY.Dangerous")))
-      weapon.properties.push(game.i18n.localize("PROPERTY.Dangerous"));
-
-    // Turn range into a numeric value (important for ranges including SB, see the function for details)
-    weapon.data.range.value = this.calculateRangeOrDamage(weapon.data.range.value);
-    
     // Melee Damage calculation
     if (weapon.attackType == "melee")
     {
       weapon["meleeWeaponType"] = true;
-      // Turn melee damage formula into a numeric value (SB + 4 into a number)         Melee damage increase flag comes from Strike Mighty Blow talent
-      weapon.data.damage.value = this.calculateRangeOrDamage(weapon.data.damage.value) + (actorData.flags.meleeDamageIncrease || 0);
-
-      // Very poor wording, but if the weapon has suffered damage (weaponDamage), subtract that amount from meleeValue (melee damage the weapon deals)
-      if (weapon.data.weaponDamage)
-        weapon.data.damage.value -= weapon.data.weaponDamage
-      else 
-        weapon.data["weaponDamage"] = 0;
     }
     // Ranged Damage calculation
     else 
     {
       weapon["rangedWeaponType"] = true;
-
-      // Turn ranged damage formula into numeric value, same as melee                 Ranged damage increase flag comes from Accurate Shot
-      weapon.data.damage.value = this.calculateRangeOrDamage(weapon.data.damage.value) + (actorData.flags.rangedDamageIncrease || 0)
-      // Very poor wording, but if the weapon has suffered damage (weaponDamage), subtract that amount from rangedValue (ranged damage the weapon deals)
-      if (weapon.data.weaponDamage)
-        weapon.data.damage.value -= weapon.data.weaponDamage
-      else 
-        weapon.data["weaponDamage"] = 0;
     }
 
     // If the weapon uses ammo...
@@ -2405,25 +1286,12 @@ class Actorwfrp3 extends Actor {
         for ( let a of actorData.items ) 
           if (a.type == "ammunition" && a.data.ammunitionType.value == weapon.data.ammunitionGroup.value) // If is ammo and the correct type of ammo
               weapon.ammo.push(a);
-
-      // Send to prepareWeaponWithAmmo for further calculation (Damage/range modifications based on ammo)
-      this.prepareWeaponWithAmmo(weapon);
     }
     // If throwing or explosive weapon, its ammo is its own quantity
-    else if (weapon.data.weaponGroup.value == game.i18n.localize("SPEC.Throwing") || weapon.data.weaponGroup.value == game.i18n.localize("SPEC.Explosives"))
+    else if (weapon.data.weaponGroup.value == game.i18n.localize("SPEC.Throwing"))
     {
       weapon.data.ammunitionGroup.value = "";
     }
-    // If entangling, it has no ammo
-    else if (weapon.data.weaponGroup.value == game.i18n.localize("SPEC.Entangling"))
-    {
-      weapon.data.ammunitionGroup.value = "";
-    }
-    // Separate qualities and flaws into their own arrays: weapon.properties.qualities/flaws
-    weapon.properties = WFRP_Utility._separateQualitiesFlaws(weapon.properties);
-
-    if (weapon.properties.special)
-      weapon.properties.special = weapon.data.special.value;
     return weapon;
   }
 
@@ -2435,500 +1303,12 @@ class Actorwfrp3 extends Actor {
    * in display and opposed tests.
    * 
    * @param   {Object} armor  'armour' type item
-   * @param   {Object} AP      Object consisting of numeric AP value for each location and a layer array to represent each armour layer
-   * @return  {Object} armor  processed armor item
    */
-  prepareArmorCombat(armor, AP)
+  prepareArmorCombat(armor)
   { 
     // Turn comma separated qualites/flaws into a more structured 'properties.qualities/flaws` string array
-    armor.properties = WFRP_Utility._separateQualitiesFlaws(WFRP_Utility._prepareQualitiesFlaws(armor));
-
-    // Iterate through armor locations covered
-    for (let apLoc in armor.data.currentAP)
-    {
-      // -1 is what all newly created armor's currentAP is initialized to, so if -1: currentAP = maxAP (undamaged)
-      if (armor.data.currentAP[apLoc] == -1)
-      {
-        armor.data.currentAP[apLoc] = armor.data.maxAP[apLoc];
-      }
-    }
-    // If the armor protects a certain location, add the AP value of the armor to the AP object's location value
-    // Then pass it to addLayer to parse out important information about the armor layer, namely qualities/flaws
-    if (armor.data.maxAP.head > 0)
-    {
-      armor["protectsHead"] = true;
-      AP.head.value += armor.data.currentAP.head;
-      WFRP_Utility.addLayer(AP, armor, "head")
-    }
-    if (armor.data.maxAP.body > 0)
-    {
-      armor["protectsBody"] = true;
-      AP.body.value += armor.data.currentAP.body;
-      WFRP_Utility.addLayer(AP, armor, "body")
-    }
-    if (armor.data.maxAP.lArm > 0)
-    {
-      armor["protectslArm"] = true;
-      AP.lArm.value += armor.data.currentAP.lArm;
-      WFRP_Utility.addLayer(AP, armor, "lArm")
-    }
-    if (armor.data.maxAP.rArm > 0)
-    {
-      armor["protectsrArm"] = true;
-      AP.rArm.value += armor.data.currentAP.rArm;
-      WFRP_Utility.addLayer(AP, armor, "rArm")
-    }
-    if (armor.data.maxAP.lLeg > 0)
-    {
-      armor["protectslLeg"] = true;
-      AP.lLeg.value += armor.data.currentAP.lLeg;
-      WFRP_Utility.addLayer(AP, armor, "lLeg")
-    }
-    if (armor.data.maxAP.rLeg > 0)
-    {
-      armor["protectsrLeg"] = true
-      AP.rLeg.value += armor.data.currentAP.rLeg;
-      WFRP_Utility.addLayer(AP, armor, "rLeg")
-    }
+    armor.properties = [];
     return armor;
-  }
-
- 
-  /**
-   * Augments a prepared weapon based on its equipped ammo.
-   * 
-   * Ammo can provide bonuses or penalties to the weapon using it, this function
-   * takes a weapon, finds its current ammo, and applies those modifiers to the
-   * weapon stats. For instance, if ammo that halves weapon range is equipped,
-   * this is where it modifies the range of the weapon
-   * 
-   * @param   {Object} weapon A *prepared* weapon item
-   * @return  {Object} weapon Augmented weapon item
-   */
-  prepareWeaponWithAmmo(weapon)
-  {
-    // Find the current ammo equipped to the weapon, if none, return
-    let ammo = weapon.ammo.find(a => a._id == weapon.data.currentAmmo.value);
-    if (!ammo)
-      return;
-
-    let ammoProperties = WFRP_Utility._prepareQualitiesFlaws(ammo);          
-
-    // If ammo properties include a "special" value, rename the property as "Special Ammo" to not overlap
-    // with the weapon's "Special" property
-    let specialPropInd =  ammoProperties.indexOf(ammoProperties.find(p => p && p.toLowerCase() == game.i18n.localize("Special").toLowerCase()));
-    if (specialPropInd != -1)
-      ammoProperties[specialPropInd] = ammoProperties[specialPropInd] + " " + game.i18n.localize("Ammo")
-
-    let ammoRange = ammo.data.range.value || "0";
-    let ammoDamage = ammo.data.damage.value || "0";
-
-    // If range modification was handwritten, process it
-    if (ammoRange.toLowerCase() == "as weapon")
-    {}
-      // Do nothing to weapon's range
-    else if (ammoRange.toLowerCase() == "half weapon")
-      weapon.data.range.value /= 2;
-    else if (ammoRange.toLowerCase() == "third weapon")
-      weapon.data.range.value /= 3;
-    else if (ammoRange.toLowerCase() == "quarter weapon")
-      weapon.data.range.value /= 4;
-    else if (ammoRange.toLowerCase() == "twice weapon")
-      weapon.data.range.value *= 2;
-    else // If the range modification is a formula (supports +X -X /X *X)
-    {
-      try // Works for + and -
-      {
-        ammoRange = eval(ammoRange);
-        weapon.data.range.value = Math.floor(eval(weapon.data.range.value + ammoRange));
-      }
-      catch // if *X and /X
-      {                                      // eval (50 + "/5") = eval(50/5) = 10
-        weapon.data.range.value = Math.floor(eval(weapon.data.range.value + ammoRange));  
-      }
-    }
-    
-    try // Works for + and -
-    {
-      ammoDamage = eval(ammoDamage);
-      weapon.data.damage.value = Math.floor(eval(weapon.data.damage.value + ammoDamage));
-    }
-    catch // if *X and /X
-    {                                      // eval (5 + "*2") = eval(5*2) = 10
-      weapon.data.damage.value = Math.floor(eval(weapon.data.damage.value + ammoDamage)); // Eval throws exception for "/2" for example. 
-    }
-    
-    // The following code finds qualities or flaws of the ammo that add to the weapon's qualities
-    // Example: Blast +1 should turn a weapon's Blast 4 into Blast 5
-    ammoProperties = ammoProperties.filter(p => p != undefined);
-    let propertyChange = ammoProperties.filter(p => p.includes("+") || p.includes("-")); // Properties that increase or decrease another (Blast +1, Blast -1)
-
-    // Normal properties (Impale, Penetrating) from ammo that need to be added to the equipped weapon
-    let propertiesToAdd = ammoProperties.filter(p => !(p.includes("+") || p.includes("-")));
-
-
-    for (let change of propertyChange)
-    {
-      // Using the example of "Blast +1" to a weapon with "Blast 3"
-      let index = change.indexOf(" ");
-      let property = change.substring(0, index).trim();   // "Blast"
-      let value = change.substring(index, change.length); // "+1"
-
-      if (weapon.properties.find(p => p.includes(property))) // Find the "Blast" quality in the main weapon
-      {
-        let basePropertyIndex = weapon.properties.findIndex(p => p.includes(property))
-        let baseValue = weapon.properties[basePropertyIndex].split(" ")[1]; // Find the Blast value of the weapon (3)
-        let newValue = eval(baseValue + value) // Assign the new value of Blast 4
-
-        weapon.properties[basePropertyIndex] = `${property} ${newValue}`; // Replace old Blast
-      }
-      else // If the weapon does not have the Blast quality to begin with
-      {
-        propertiesToAdd.push(property + " " + Number(value)); // Add blast as a new quality (Blast 1)
-      }
-    }
-    // Add the new Blast property to the rest of the qualities the ammo adds to the weapon
-    weapon.properties = weapon.properties.concat(propertiesToAdd);
-  }
-
-  /**
-   * Calculates the wounds of an actor based on prepared items
-   * 
-   * Once all the item preparation is done (prepareItems()), we have a list of traits/talents to use that will
-   * factor into Wonuds calculation. Namely: Hardy and Size traits. If we find these, they must be considered
-   * in Wound calculation. 
-   * 
-   * @param {Object} actorData    prepared actor data - all items organized and processed 
-   * 
-   * @returns {Number} Max wound value calculated
-   */
-  calculateWounds(actorData)
-  {
-    /// There's both a Hardy Trait and Hardy Talent (thanks C7) so find both.
-    let hardyTrait = actorData.traits.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Hardy").toLowerCase()))
-    let hardyTalent = actorData.talents.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Hardy").toLowerCase()))
-
-    /// tbMultiplier is the additional amount of TB to add to Wounds. 0 if no Hardy
-    let tbMultiplier = (hardyTrait ? 1 : 0)
-    if (hardyTalent) // The talent can be taken multiple times, so take into account advances.
-      tbMultiplier += hardyTalent.data.advances.value || 0
-
-    // Easy to reference bonuses
-    let sb = actorData.data.characteristics.s.bonus;
-    let tb = actorData.data.characteristics.t.bonus;
-    let wpb =actorData.data.characteristics.wp.bonus;
-
-    if (actorData.flags.autoCalcCritW)
-      actorData.data.status.criticalWounds.max = tb;
-
-    let wounds = actorData.data.status.wounds.max;
-
-    if (actorData.flags.autoCalcWounds)
-    {
-      // Construct trait means you use SB instead of WPB 
-      if (actorData.traits.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Construct").toLowerCase()) || actorData.traits.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Mindless").toLowerCase()))))
-        wpb = sb;
-      switch (actorData.data.details.size.value) // Use the size to get the correct formula (size determined in prepare())
-      {
-        case "tiny":
-        wounds = 1 + tb * tbMultiplier;
-        break;
-
-        case "ltl":
-        wounds = tb + tb * tbMultiplier;
-        break;
-
-        case "sml":
-        wounds = 2 * tb + wpb + tb * tbMultiplier;
-        break;
-
-        case "avg":
-        wounds = sb + 2 * tb + wpb + tb * tbMultiplier;
-        break;
-
-        case "lrg":
-        wounds = 2 * (sb + 2 * tb + wpb + tb * tbMultiplier);
-        break;
-
-        case "enor":
-        wounds = 4 * (sb + 2 * tb + wpb + tb * tbMultiplier);
-        break;
-
-        case "mnst":
-        wounds = 8 * (sb + 2 * tb + wpb + tb * tbMultiplier);
-        break;
-      }
-    }
-
-    let swarmTrait = actorData.traits.find(t => t.name.toLowerCase().includes(game.i18n.localize("NAME.Swarm").toLowerCase()))
-    if (swarmTrait)
-      wounds *= 5;
-
-
-    return wounds
-  }
-
-  /**
-   * Prepares a 'spell' or 'prayer' Item type.
-   * 
-   * Calculates many aspects of spells/prayers defined by characteristics - range, duration, damage, aoe, etc.
-   * See the calculation function used for specific on how it processes these attributes.
-   * 
-   * @param   {Object} item   'spell' or 'prayer' Item 
-   * @return  {Object} item   Processed spell/prayer
-   */
-  prepareSpellOrPrayer(item) 
-  {
-    // Turns targets and duration into a number - (e.g. Willpower Bonus allies -> 4 allies, Willpower Bonus Rounds -> 4 rounds, Willpower Yards -> 46 yards)
-    item['target'] =    this.calculateSpellAttributes(item.data.target.value, item.data.target.aoe);
-    item['duration'] =  this.calculateSpellAttributes(item.data.duration.value);
-    item['range'] =     this.calculateSpellAttributes(item.data.range.value);
-
-    item.overcasts = {
-      available : 0,
-      range : undefined,
-      duration : undefined,
-      target : undefined,
-    }
-
-    if (parseInt(item.target))
-    {
-      item.overcasts.target = {
-        label : "Target",
-        count : 0,
-        AoE: false,
-        initial : parseInt(item.target),
-        current : parseInt(item.target),
-        unit : ""
-      }
-    }
-    else if (item.target.includes("AoE"))
-    {
-      let aoeValue = item.target.substring(item.target.indexOf("(") + 1, item.target.length - 1)
-      item.overcasts.target = {
-        label : "AoE",
-        count : 0,
-        AoE: true,
-        initial : parseInt(aoeValue),
-        current : parseInt(aoeValue),
-        unit : aoeValue.split(" ")[1]
-      }
-    }
-    if (parseInt(item.duration))
-    {
-      item.overcasts.duration = {
-        label : "Duration",
-        count : 0,
-        initial : parseInt(item.duration),
-        current : parseInt(item.duration),
-        unit : item.duration.split(" ")[1]
-      }
-    }
-    if (parseInt(item.range))
-    {
-      item.overcasts.range = {
-        label : "Range",
-        count : 0,
-        initial : parseInt(item.range),
-        current : parseInt(item.range),
-        unit : item.range.split(" ")[1]
-      }
-    }
-
-    // Add the + to the duration if it's extendable
-    if (item.data.duration.extendable)
-      item.duration += "+";
-
-    // Calculate the damage different if it's a Magic Misile spell versus a prayer
-    if (item.type == "spell")
-      item['damage'] = this.calculateSpellDamage(item.data.damage.value, item.data.magicMissile.value);
-    else
-      item['damage'] = this.calculateSpellDamage(item.data.damage.value, false);
-
-    // If it's a spell, augment the description (see _spellDescription() and CN based on memorization) 
-    if (item.type == "spell")
-    {
-      item.data.description.value = WFRP_Utility._spellDescription(item);
-      if (!item.data.memorized.value )
-        item.data.cn.value *= 2;
-    }
-
-    return item;
-  }
-
-
-  /**
-   * Turns a formula into a processed string for display
-   * 
-   * Turns a spell attribute such as "Willpower Bonus Rounds" into a more user friendly, processed value
-   * such as "4 Rounds". If the aoe is checked, it wraps the result in AoE (Result).
-   * 
-   * @param   {String}  formula   Formula to process - "Willpower Bonus Rounds" 
-   * @param   {boolean} aoe       Whether or not it's calculating AoE (changes string return)
-   * @returns {String}  formula   processed formula
-   */
-  calculateSpellAttributes(formula, aoe=false)
-  {
-    let actorData = this.data
-    formula = formula.toLowerCase();
-
-    // Do not process these special values
-    if (formula != game.i18n.localize("You").toLowerCase() && formula != game.i18n.localize("Special").toLowerCase() && formula != game.i18n.localize("Instant").toLowerCase())
-    {
-      // Iterate through characteristics
-      for(let ch in actorData.data.characteristics)
-      {
-        // If formula includes characteristic name
-        if (formula.includes(wfrp3.characteristics[ch].toLowerCase()))
-        {
-          // Determine if it's looking for the bonus or the value
-          if (formula.includes('bonus'))
-            formula = formula.replace(wfrp3.characteristics[ch].toLowerCase().concat(" bonus"),  actorData.data.characteristics[ch].bonus);
-          else
-            formula = formula.replace(wfrp3.characteristics[ch].toLowerCase(),  actorData.data.characteristics[ch].value);
-        }
-      }
-    }
-
-    // If AoE - wrap with AoE ( )
-    if (aoe)
-      formula = "AoE (" + formula.capitalize() + ")";
-
-    return formula.capitalize();
-  }
-
-  /**
-   * Turns a formula into a processed string for display
-   * 
-   * Processes damage formula based - same as calculateSpellAttributes, but with additional
-   * consideration to whether its a magic missile or not
-   * 
-   * @param   {String}  formula         Formula to process - "Willpower Bonus + 4" 
-   * @param   {boolean} isMagicMissile  Whether or not it's a magic missile - used in calculating additional damage
-   * @returns {String}  Processed formula
-   */
-  calculateSpellDamage(formula, isMagicMissile)
-  {
-    let actorData = this.data
-    formula = formula.toLowerCase();
-
-    if (isMagicMissile) // If it's a magic missile, damage includes willpower bonus
-    {
-      formula += "+ willpower bonus"
-    }
-
-    // Iterate through characteristics
-    for(let ch in actorData.data.characteristics)
-    { 
-      // If formula includes characteristic name
-      while (formula.includes(game.i18n.localize(actorData.data.characteristics[ch].label).toLowerCase()))
-      {
-        // Determine if it's looking for the bonus or the value
-        if (formula.includes('bonus'))
-          formula = formula.replace(wfrp3.characteristics[ch].toLowerCase().concat(" bonus"),  actorData.data.characteristics[ch].bonus);
-        else
-          formula = formula.replace(wfrp3.characteristics[ch].toLowerCase(),  actorData.data.characteristics[ch].value);
-      }
-    }
-
-    return eval(formula);
-  }
-
-  /**
-   * Construct armor penalty string based on armors equipped.
-   * 
-   * For each armor, compile penalties and concatenate them into one string.
-   * Does not stack armor *type* penalties.
-   * 
-   * @param {Array} armorList array of processed armor items 
-   * @return {string} Penalty string
-   */
-  calculateArmorPenalties(armorList)
-  {
-    let armorPenaltiesString = "";
-
-    // Armor type penalties do not stack, only apply if you wear any of that type
-    let wearingMail = false;
-    let wearingPlate = false;
-
-    for (let a of armorList)
-    {
-      // For each armor, apply its specific penalty value, as well as marking down whether
-      // it qualifies for armor type penalties (wearingMail/Plate)
-      armorPenaltiesString += a.data.penalty.value + " ";
-      if (a.data.armorType.value == "mail")
-        wearingMail = true;
-      if (a.data.armorType.value == "plate")
-        wearingPlate = true;
-    }
-
-    // Apply armor type penalties at the end
-    if (wearingMail || wearingPlate)
-    {
-      let stealthPenaltyValue = 0;
-      if (wearingMail)
-        stealthPenaltyValue += -10;
-      if (wearingPlate)
-        stealthPenaltyValue += -10;
-      // Add the penalties together to reduce redundancy
-      armorPenaltiesString += (stealthPenaltyValue + ` ${game.i18n.localize("NAME.Stealth")}`);
-    }
-    return armorPenaltiesString;
-  }
-
-  /**
-   * Calculates a weapon's range or damage formula.
-   * 
-   * Takes a weapon formula for Damage or Range (SB + 4 or SBx3) and converts to a numeric value.
-   * 
-   * @param {String} formula formula to be processed (SBx3 => 9).
-   * 
-   * @return {Number} Numeric formula evaluation
-   */
-  calculateRangeOrDamage(formula)
-  {
-    let actorData = this.data
-    try 
-    {
-      formula = formula.toLowerCase();
-      // Iterate through characteristics
-      for(let ch in actorData.data.characteristics)
-      {
-        // Determine if the formula includes the characteristic's abbreviation + B (SB, WPB, etc.)
-        if (formula.includes(ch.concat('b')))
-        {
-          // Replace that abbreviation with the Bonus value
-          formula = formula.replace(ch.concat('b'), actorData.data.characteristics[ch].bonus.toString());
-        }
-      }
-      // To evaluate multiplication, replace x with *
-      formula = formula.replace('x', '*');
-
-      return eval(formula);
-    }
-    catch 
-    {
-      return formula
-    }
-  }
-
-    /**
-   * Adds all missing basic skills to the Actor.
-   *
-   * This function will add all mising basic skills, used when an Actor is created (see create())
-   * as well as from the right click menu from the Actor directory.
-   *
-   */
-  async addBasicSkills() {
-    let allItems = duplicate(this.data.items)
-    let ownedBasicSkills = allItems.filter(i => i.type == "skill" && i.data.advanced.value == "bsc");
-    let allBasicSkills = await WFRP_Utility.allBasicSkills()
-
-    // Filter allBasicSkills with ownedBasicSkills, resulting in all the missing skills
-    let skillsToAdd = allBasicSkills.filter(s => !ownedBasicSkills.find(ownedSkill => ownedSkill.name == s.name))
-
-    // Add those missing basic skills
-    this.createEmbeddedEntity("OwnedItem", skillsToAdd);
   }
 
   /**
@@ -3138,9 +1518,6 @@ class Actorwfrp3 extends Actor {
     else if (impenetrable)
       updateMsg += `<br>${game.i18n.localize("PROPERTY.Impenetrable")} - ${game.i18n.localize("CHAT.CriticalsNullified")}`
 
-    if (hack)
-      updateMsg += `<br>${game.i18n.localize("CHAT.DamageAP")} ${wfrp3.locations[opposeData.hitloc.value]}`
-
     if (newWounds <= 0)
       newWounds = 0; // Do not go below 0 wounds
 
@@ -3155,240 +1532,6 @@ class Actorwfrp3 extends Actor {
 
 
   
-  /* --------------------------------------------------------------------------------------------------------- */
-  /* -------------------------------------- Auto-Advancement Functions --------------------------------------- */
-  /* --------------------------------------------------------------------------------------------------------- */
-  /**
-   * These functions are primarily for NPCs and Creatures and their automatic advancement capabilities. 
-   *
-  /* --------------------------------------------------------------------------------------------------------- */
-
-
-  /**
-   * Advances an actor's skills based on their species and character creation rules
-   * 
-    * Per character creation, 3 skills from your species list are advanced by 5, and 3 more are advanced by 3.
-    * This functions uses the Foundry Roll class to randomly select skills from the list (defined in config.js)
-    * and advance the first 3 selected by 5, and the second 3 selected by 3. This function uses the advanceSkill()
-    * helper defined below.
-   */
-  async _advanceSpeciesSkills() 
-  {
-    let skillList
-
-    // A species may not be entered in the actor, so use some error handling.
-    try
-    {
-      skillList = wfrp3.speciesSkills[this.data.data.details.species.value];
-      if (!skillList)
-      {
-        // findKey() will do an inverse lookup of the species key in the species object defined in config.js, and use that if 
-        // user-entered species value does not work (which it probably will not)
-        skillList = wfrp3.speciesSkills[WFRP_Utility.findKey(this.data.data.details.species.value, wfrp3.species)]
-        if (!skillList)
-        {
-          throw game.i18n.localize("Error.SpeciesSkills") + " " + this.data.data.details.species.value;
-        }
-      }
-    }
-    catch(error)
-    {
-        ui.notifications.info("Could not find species " + this.data.data.details.species.value)
-        console.log("wfrp3 | Could not find species " + this.data.data.details.species.value + ": " + error);
-        throw error
-    }
-    // The Roll class used to randomly select skills
-    let skillSelector = new Roll(`1d${skillList.length}- 1`);
-    skillSelector.roll().total;
-
-    // Store selected skills
-    let skillsSelected = [];
-    while (skillsSelected.length < 6)
-    {
-      skillSelector = skillSelector.reroll()
-      if (!skillsSelected.includes(skillSelector.total)) // Do not push duplicates
-        skillsSelected.push(skillSelector.total);
-    }
-
-    // Advance the first 3 by 5, advance the second 3 by 3.
-    for (let skillIndex = 0; skillIndex < skillsSelected.length; skillIndex++)
-    {
-      if (skillIndex <= 2)
-        await this._advanceSkill(skillList[skillsSelected[skillIndex]], 5)
-      else
-        await this._advanceSkill(skillList[skillsSelected[skillIndex]], 3)
-    }
-  }
-
-
-  /**
-   * Advances an actor's talents based on their species and character creation rules
-   * 
-   * Character creation rules for talents state that you get all talents in your species, but there
-   * are a few where you must choose between two instead. See config.js for how the species talent 
-   * object is set up for support in this. Basically species talents are an array of strings, however
-   * ones that offer a choice is formatted as "<talent1>, <talent2>", each talent being a choice. Finally,
-   * the last element of the talent list is a number denoting the number of random talents. This function uses
-   * the advanceTalent() helper defined below.
-   */
-  async _advanceSpeciesTalents() 
-  {
-    // A species may not be entered in the actor, so use some error handling.
-    let talentList
-    try
-    {
-      talentList = wfrp3.speciesTalents[this.data.data.details.species.value];
-      if (!talentList)
-      {
-        // findKey() will do an inverse lookup of the species key in the species object defined in config.js, and use that if 
-        // user-entered species value does not work (which it probably will not)
-        talentList = wfrp3.speciesTalents[WFRP_Utility.findKey(this.data.data.details.species.value, wfrp3.species)]
-        if (!talentList)
-          throw game.i18n.localize("Error.SpeciesTalents") + " " + this.data.data.details.species.value;
-      }
-    }
-    catch (error)
-    {
-      ui.notifications.info("Could not find species " + this.data.data.details.species.value)
-      console.log("wfrp3 | Could not find species " + this.data.data.details.species.value + ": " + error);
-      throw error
-    }
-    let talentSelector;
-    for (let talent of talentList)
-    {
-      if (!isNaN(talent)) // If is a number, roll on random talents
-      {
-        for (let i = 0; i < talent; i++)
-        {
-          let result = WFRP_Tables.rollTable("talents")
-          await this._advanceTalent(result.name);
-        }
-        continue
-      }
-      // If there is a comma, talent.split() will yield an array of length > 1
-      let talentOptions = talent.split(',').map(function(item) {
-        return item.trim();
-      });
-
-      // Randomly choose a talent option and advance it.
-      if (talentOptions.length > 1)
-      {
-        talentSelector = new Roll(`1d${talentOptions.length} - 1`)
-          await this._advanceTalent(talentOptions[talentSelector.roll().total])
-      }
-      else // If no option, simply advance the talent.
-      {
-        await this._advanceTalent(talent)
-      }
-    }
-
-  }
-
-
-  /**
-   * Adds (if needed) and advances a skill by the specified amount.
-   * 
-   * As the name suggests, this function advances any given skill, if 
-   * the actor does not currently have that skill, it will be added 
-   * from the compendium and advanced. Note that this function is neither
-   * used by manually advancing skills nor when clicking on advancement 
-   * indicators. This will simply add the advancement value with no
-   * other processing.
-   * 
-   * @param {String} skillName    Name of the skill to advance/add
-   * @param {Number} advances     Advances to add to the skill
-   */
-  async _advanceSkill(skillName, advances)
-  {
-    // Look through items and determine if the actor has the skill
-    let existingSkill = this.data.items.find(i => i.name.trim() == skillName && i.type == "skill")
-    // If so, simply update the skill with the new advancement value. 
-    if (existingSkill)
-    {
-      existingSkill = duplicate(existingSkill);
-      // If the existing skill has a greater amount of advances, use the greater value instead (make no change) - ??? Is this needed? I'm not sure why I did this. TODO: Evaluate.
-      existingSkill.data.advances.value = (existingSkill.data.advances.value < advances) ? advances : existingSkill.data.advances.value;
-      await this.updateEmbeddedEntity("OwnedItem", existingSkill);
-      return;
-    }
-
-    // If the actor does not already own skill, search through compendium and add it
-    try
-    {
-      // See findSkill() for a detailed explanation of how it works
-      // Advanced find function, returns the skill the user expects it to return, even with skills not included in the compendium (Lore (whatever))
-      let skillToAdd = await WFRP_Utility.findSkill(skillName)
-      skillToAdd.data.data.advances.value = advances;
-      await this.createEmbeddedEntity("OwnedItem", skillToAdd.data);
-    }
-    catch(error) {
-      console.error("Something went wrong when adding skill " + skillName +": " + error);
-      ui.notifications.error("Something went wrong when adding skill " + skillName +": " + error);
-    }
-  }
-
-  /**
-   * Adds the given talent to the actor
-   * 
-   * In my implementation, adding a talent is the same as advancing a talent. See
-   * prepareTalent() and you'll see that the total number of any given talent is the
-   * advencement value.
-   * 
-   * @param {String} talentName     Name of the talent to add/advance.
-   */
-  async _advanceTalent(talentName)
-  {
-    try
-    {
-      // See findTalent() for a detailed explanation of how it works
-      // Advanced find function, returns the Talent the user expects it to return, even with Talents not included in the compendium (Etiquette (whatever))
-      let talent = await WFRP_Utility.findTalent(talentName);
-      await this.createEmbeddedEntity("OwnedItem", talent.data);
-    }
-    catch(error) {
-      console.error("Something went wrong when adding talent " + talentName +": " + error);
-      ui.notifications.error("Something went wrong when adding talent " + talentName +": " + error);
-    }
-  }
-
-  /**
-   * Advance NPC based on given career
-   * 
-   * A specialized function used by NPC type Actors that triggers when you click on a 
-   * career to be "complete". This takes all the career data and uses it (and the helpers
-   * defined above) to advance the actor accordingly. It adds all skills (advanced to the 
-   * correct amount to be considered complete), advances all characteristics similarly, and 
-   * adds all talents.
-   * 
-   * Note: This adds *all* skills and talents, which is not necessary to be considered complete.
-   * However, I find deleting the ones you don't want to be much easier than trying to pick and 
-   * choose the ones you do want.
-   *
-   * @param {Object} careerData     Career type Item to be used for advancement.
-   * 
-   * TODO Refactor for embedded entity along with the helper functions
-   */
-  async _advanceNPC(careerData) 
-  {
-    let updateObj = {};
-    let advancesNeeded = careerData.level.value * 5; // Tier 1 needs 5, 2 needs 10, 3 needs 15, 4 needs 20 in all characteristics and skills
-
-    // Update all necessary characteristics to the advancesNeeded
-    for (let advChar of careerData.characteristics)
-      if (this.data.data.characteristics[advChar].advances < 5 * careerData.level.value)
-        updateObj[`data.characteristics.${advChar}.advances`] = 5 * careerData.level.value;
-
-    // Advance all skills in the career
-    for (let skill of careerData.skills)
-      await this._advanceSkill(skill, advancesNeeded);
-
-    // Add all talents in the career
-    for (let talent of careerData.talents)
-      await this._advanceTalent(talent);
-
-    this.update(updateObj);
-  }
-
 
   _replaceData(formula) {
     let dataRgx = new RegExp(/@([a-z.0-9]+)/gi);
@@ -3396,107 +1539,6 @@ class Actorwfrp3 extends Actor {
       let value = getProperty(this.data, term);
       return value ? String(value).trim() : "0";
     });
-  }
-
-  /**
-   * Use a fortune point from the actor to reroll or add sl to a roll
-   * @param {Object} message 
-   * @param {String} type (reroll, addSL)
-   */
-  useFortuneOnRoll(message, type)
-  {
-    if(this.data.data.status.fortune.value > 0)
-    {
-      let data = message.data.flags.data;
-      let html = `<h3 class="center"><b>${game.i18n.localize("FORTUNE.Use")}</b></h3>`;
-      //First we send a message to the chat
-      if(type=="reroll")
-        html += `${game.i18n.format("FORTUNE.UsageRerollText",{character:'<b>'+this.name+'</b>'})}<br>`;
-      else
-        html += `${game.i18n.format("FORTUNE.UsageAddSLText",{character:'<b>'+this.name+'</b>'})}<br>`;
-
-      html += `<b>${game.i18n.localize("FORTUNE.PointsRemaining")} </b>${this.data.data.status.fortune.value-1}`;
-      ChatMessage.create(WFRP_Utility.chatDataSetup(html));
-
-      let cardOptions = this.preparePostRollAction(message);
-      //Then we do the actual fortune action
-      if(type=="reroll")
-      {
-        cardOptions.fortuneUsedReroll = true;
-        //It was an unopposed targeted test who failed
-        if(data.originalTargets && data.originalTargets.size>0)
-        {
-          game.user.targets = data.originalTargets;
-          //Foundry has a circular reference to the user in its targets set so we do it too
-          game.user.targets.user = game.user;
-        }
-        //It it is an ongoing opposed test, we transfer the list of the startMessages to update them
-        if(!data.defenderMessage && data.startMessagesList)
-        {
-          cardOptions.startMessagesList = data.startMessagesList;
-        }
-        delete data.preData.roll;
-        Actorwfrp3[data.postData.postFunction](data.preData,cardOptions);
-        //We also set fortuneUsedAddSL to force the player to use it on the new roll
-        message.update({
-          "flags.data.fortuneUsedReroll" : true,
-          "flags.data.fortuneUsedAddSL" : true
-        });
-      }
-      else //addSL
-      {
-        let newTestData = data.preData;
-        newTestData.SL = Math.trunc(data.postData.SL) + 1;
-        newTestData.slBonus = 0;
-        newTestData.successBonus = 0;
-        newTestData.roll =  Math.trunc(data.postData.roll);
-        newTestData.hitloc = data.preData.hitloc;
-
-        //We deselect the token, 
-        //2020-04-25 : Currently the foundry function is bugged so we do it ourself
-        //game.user.updateTokenTargets([]);
-        game.user.targets.forEach(t => t.setTarget(false, {user: game.user, releaseOthers: false, groupSelection: true}));
-
-        cardOptions.fortuneUsedAddSL = true;
-        Actorwfrp3[data.postData.postFunction](newTestData,cardOptions,message);
-        message.update({
-          "flags.data.fortuneUsedAddSL" : true
-        });
-      }
-      this.update({"data.status.fortune.value" : this.data.data.status.fortune.value-1});
-    }
-  }
-
-  /**
-   * Take a Dark Deal to reroll for +1 Corruption
-   * @param {Object} message 
-   */
-  useDarkDeal(message)
-  {
-    let html = `<h3 class="center"><b>${game.i18n.localize("DARKDEAL.Use")}</b></h3>`;
-    html += `${game.i18n.format("DARKDEAL.UsageText",{character:'<b>'+this.name+'</b>'})}<br>`;
-    let corruption = Math.trunc(this.data.data.status.corruption.value)+1;
-    html += `<b>${game.i18n.localize("Corruption")}: </b>${corruption}/${this.data.data.status.corruption.max}`;
-    ChatMessage.create(WFRP_Utility.chatDataSetup(html));
-    this.update({"data.status.corruption.value" : corruption});
-    let cardOptions = this.preparePostRollAction(message);
-    let data = message.data.flags.data;
-    cardOptions.fortuneUsedReroll = data.fortuneUsedReroll;
-    cardOptions.fortuneUsedAddSL = data.fortuneUsedAddSL;
-    //It was an unopposed targeted test who failed
-    if(data.originalTargets && data.originalTargets.size>0)
-    {
-      game.user.targets = data.originalTargets;
-      //Foundry has a circular reference to the user in its targets set so we do it too
-      game.user.targets.user = game.user;
-    }
-    //It it is an ongoing opposed test, we transfer the list of the startMessages to update them
-    if(!data.defenderMessage && data.startMessagesList)
-    {
-      cardOptions.startMessagesList = data.startMessagesList;
-    }
-    delete message.data.flags.data.preData.roll;
-    Actorwfrp3[message.data.flags.data.postData.postFunction](message.data.flags.data.preData,cardOptions);
   }
 
   /**

@@ -65,35 +65,42 @@
       <select name="data.availability.value" data-dtype={{data.availability.type}}>
         {{#select data.availability.value}}
         {{#each availability as |avail a|}}
-        <option value="{{a}}">{{avail}}</option>
+        <option value="{{a}}">{{a}}</option>
         {{/each}}
         {{/select}}
       </select>
     </div>
 
     <div class="form-group">
-      <label class="label-text">{{localize "Damage"}}</label>
+      <label class="label-text">{{localize "Damage Rating"}}</label>
       <div class="input-box">
-        <input class="input-text" type="text" name="data.damage.value" value="{{data.damage.value}}"
-          data-dtype="{{data.damage.type}}" />
+        <input class="input-text" type="text" name="data.damageRating.value" value="{{data.damageRating.value}}"
+          data-dtype="{{data.damageRating.type}}" />
       </div>
     </div>
 
-    {{#if isMelee}}
     <div class="form-group">
-      <label class="label-text">{{localize "Reach"}}</label>
-      <select name="data.reach.value" data-dtype="{{data.reach.type}}">
-        {{#select data.reach.value}}
-        <option value=""></option>
-        {{#each weaponReaches as |reach r|}}
-        <option value="{{r}}">{{reach}}</option>
-        {{/each}}
-        {{/select}}
+      <label class="label-text">{{localize "Critical Rating"}}</label>
+      <div class="input-box">
+        <input class="input-text" type="text" name="data.criticalRating.value" value="{{data.criticalRating.value}}"
+          data-dtype="{{data.criticalRating.type}}" />
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label class="label-text">Craftsmanship</label>
+      <select name="data.craftsmanship.value" data-dtype="{{data.craftsmanship.value}}">
+          {{#select data.craftsmanship.value}}
+          <option value=""></option>
+          {{#each craftsmanship as |name type|}}
+          <option value="{{type}}">{{type}}</option>
+          {{/each}}
+          {{/select}}
       </select>
     </div>
 
+    {{#if isMelee}}
     {{else}}
-
     <div class="form-group">
       <label class="label-text">{{localize "Range"}}</label>
       <div class="input-box">
@@ -101,7 +108,6 @@
           data-dtype="{{data.range.type}}" />
       </div>
     </div>
-
     
     <div class="form-group">
       <label class="label-text">{{localize "ITEM.AmmunitionGroup"}}</label>
@@ -115,18 +121,14 @@
       </select>
     </div>
 
-    {{/if}}
-
-
     <div class="form-group">
-      <label class="label-text">{{localize "ITEM.TwoHanded"}}</label>
-      {{#if data.twohanded.value}}
-      <a class="item-checkbox" data-target="twohanded.value"><i class="far fa-check-circle"></i></a>
-      {{else}}
-      <a class="item-checkbox" data-target="twohanded.value"><i class="far fa-circle"></i></a>
-      {{/if}}
+      <label class="label-text">Current Ammo</label>
+      <div class="input-box">
+        <input class="input-text" type="text" name="data.currentAmmo.value" value="{{data.currentAmmo.value}}"
+          data-dtype="{{data.currentAmmo.type}}" />
+      </div>
     </div>
-
+    {{/if}}
     <div class="form-group-stacked">
       <label class="label-text">{{localize "Qualities"}} (comma-separated)</label>
       <div class="input-box">
@@ -134,15 +136,7 @@
           data-dtype="{{data.properties.type}}" />
       </div>
     </div>
-
-    <div class="form-group-stacked">
-      <label class="label-text">{{localize "Flaws"}} (comma-separated)</label>
-      <div class="input-box">
-        <input class="input-text" type="text" name="data.flaws.value" value="{{data.flaws.value}}"
-          data-dtype="{{data.properties.type}}" />
-      </div>
-    </div>
-
+    
     <div class="form-group-stacked">
       <label class="label-text">{{localize "Special"}}</label>
       <div class="input-box">
@@ -168,9 +162,6 @@
         else if (document.getElementById(new_red).className.includes("ammo-sheet")) {
           continue;
         } 
-        else if (document.getElementById(new_red).className.includes("consumable-sheet")) {
-          continue;
-        } 
         else if (document.getElementById(new_red).className.includes("container-sheet")) {
           continue;
         } 
@@ -186,16 +177,7 @@
         else if (document.getElementById(new_red).className.includes("mutation-sheet")) {
           continue;
         } 
-        else if (document.getElementById(new_red).className.includes("prayer-sheet")) {
-          continue;
-        } 
         else if (document.getElementById(new_red).className.includes("psychology-sheet")) {
-          continue;
-        } 
-        else if (document.getElementById(new_red).className.includes("skill-sheet")) {
-          continue;
-        } 
-        else if (document.getElementById(new_red).className.includes("spell-sheet")) {
           continue;
         } 
         else if (document.getElementById(new_red).className.includes("talent-sheet")) {

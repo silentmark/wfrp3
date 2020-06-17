@@ -200,12 +200,6 @@ class OpposedWFRP
             value: null
           };
         }
-        if (opposeResult.attackerTestResult.hitloc)
-          opposeResult.hitloc = {
-            description: `<b>${game.i18n.localize("ROLL.HitLocation")}</b>: ${opposeResult.attackerTestResult.hitloc.description}`,
-            value: opposeResult.attackerTestResult.hitloc.result
-          };
-
           try // SOUND
           {
             if (opposeResult.attackerTestResult.weapon.data.weaponGroup.value === game.i18n.localize("SPEC.Bow") 

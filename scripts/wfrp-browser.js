@@ -56,7 +56,6 @@ class Browserwfrp3 extends Application
         armorType : {value : "", type : ["armour"], show : false},
         protects : {value : {head : true, body: true, arms : true, legs : true}, type : ["armour"], show : false},
         carries : {value : "", relation : "", type : ["container"], show : false},
-        location : {value : "", type : ["critical", "injury"], show : false},
         wounds : {value : "", relation : "", type : ["critical"], show : false},
         symptoms : {value : [],  type : ["disease"], show : false},
         mutationType : {value : "",  type : ["mutation"], show : false},
@@ -144,7 +143,6 @@ class Browserwfrp3 extends Application
     data.relations = ["<", "<=", "==", ">=", ">"]
     data.availability = wfrp3.availability;
     data.ammunitionGroups = wfrp3.ammunitionGroups;
-    data.locations = ["Head", "Body", "Arm", "Leg"];
     data.mutationTypes = wfrp3.mutationTypes;
     data.armorTypes = wfrp3.armorTypes;
     data.gods = this.gods;
@@ -299,21 +297,6 @@ class Browserwfrp3 extends Application
           case "statusStanding":
             filteredItems = filteredItems.filter(i => !i.data.data.status || (i.data.data.status && this.filters.dynamic[filter].relation && eval(`${i.data.data.status.standing}${this.filters.dynamic[filter].relation}${this.filters.dynamic[filter].value}`)))
             break;
-          case "qualitiesFlaws":
-            if (this.filters.dynamic[filter].value.length && this.filters.dynamic[filter].value.some(x => x))
-            filteredItems = filteredItems.filter(i =>
-              {
-                if (!i.data.data.qualities && !i.data.data.flaws)
-                  return true;
-                let properties = WFRP_Utility._prepareQualitiesFlaws(i, true)
-                if (!properties.length || (properties.length == 1 && properties[0] == "Special"))
-                  return;
-
-                return this.filters.dynamic[filter].value.every(value =>
-                  { return properties.find(v => v.toLowerCase().includes(value.toLowerCase())) })
-
-              })
-              break;
           case "symptoms" : {
             if (this.filters.dynamic[filter].value.length && this.filters.dynamic[filter].value.some(x => x))
             filteredItems = filteredItems.filter(i =>

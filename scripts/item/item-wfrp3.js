@@ -241,8 +241,6 @@ class Itemwfrp3 extends Item
       properties.push(`${game.i18n.localize("Range")}: ${data.range.value}`);
     if (data.damage.value)
       properties.push(`${game.i18n.localize("Damage")}: ${data.damage.value}`);
-    for (let prop of WFRP_Utility._prepareQualitiesFlaws(this.data).map(i => i = "<a class ='item-property'>" + i + "</a>"))
-      properties.push(prop);
     if (data.twohanded.value)
       properties.push(game.i18n.localize("ITEM.TwoHanded"));
     if (data.reach.value)
@@ -266,8 +264,6 @@ class Itemwfrp3 extends Item
     const data = duplicate(this.data.data);
     const properties = [];
     properties.push(wfrp3.armorTypes[data.armorType.value]);
-    for (let prop of WFRP_Utility._prepareQualitiesFlaws(this.data).map(i => i = "<a class ='item-property'>" + i + "</a>"))
-      properties.push(prop);
     properties.push(data.penalty.value);
 
     data.properties = properties.filter(p => !!p);
@@ -286,9 +282,6 @@ class Itemwfrp3 extends Item
 
     if (data.damage.value)
       properties.push(`${game.i18n.localize("Damage")}: ${data.damage.value}`);
-
-    for (let prop of WFRP_Utility._prepareQualitiesFlaws(this.data).map(i => i = "<a class ='item-property'>" + i + "</a>"))
-      properties.push(prop);
     properties = properties.filter(p => p != game.i18n.localize("Special"));
     if (data.special.value)
       properties.push(`${game.i18n.localize("Special")}: ` + data.special.value);
@@ -590,7 +583,7 @@ class Itemwfrp3 extends Item
     if (data.APdamage)
       properties.push(`${game.i18n.localize("ITEM.ShieldDamaged")} ${data.APdamage} points`)
 
-    let weaponProperties = WFRP_Utility._separateQualitiesFlaws(WFRP_Utility._prepareQualitiesFlaws(this.data));
+    let weaponProperties = {};
 
     // Make qualities and flaws clickable
     weaponProperties.qualities = weaponProperties.qualities.map(i => i = "<a class ='item-property'>" + i + "</a>");
@@ -633,13 +626,8 @@ class Itemwfrp3 extends Item
       if (data.currentAP[apVal] == -1)
         data.currentAP[apVal] = data.maxAP[apVal];
     }
-
-    for (let loc in wfrp3.locations)
-      if (data.maxAP[loc])
-        properties.push(`<b>${wfrp3.locations[loc]} AP</b>: ${data.currentAP[loc]}/${data.maxAP[loc]}`);
-
-
-    let armourProperties = WFRP_Utility._separateQualitiesFlaws(WFRP_Utility._prepareQualitiesFlaws(this.data));
+    
+    let armourProperties = {};
 
     // Make qualities and flaws clickable
     armourProperties.qualities = armourProperties.qualities.map(i => i = "<a class ='item-property'>" + i + "</a>");
@@ -674,7 +662,7 @@ class Itemwfrp3 extends Item
     if (data.damage.value)
       properties.push(`<b>${game.i18n.localize("Damage")}</b>: ${data.damage.value}`);
 
-    let ammoProperties = WFRP_Utility._separateQualitiesFlaws(WFRP_Utility._prepareQualitiesFlaws(this.data));
+    let ammoProperties = {};
 
     ammoProperties.qualities = ammoProperties.qualities.map(i => i = "<a class ='item-property'>" + i + "</a>");
     ammoProperties.flaws = ammoProperties.flaws.map(i => i = "<a class ='item-property'>" + i + "</a>");

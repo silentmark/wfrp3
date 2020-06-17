@@ -127,6 +127,24 @@
 </div>
 
 <div class="main-row second">
+
+  <div class="stance row-section">
+    <div class="state-section">
+      <span class="top label">Stance R/C</span> 
+      <div class="state-value-box">
+        <div id="value">
+          <input class="state-value" style="color: red;" type="text" name="data.state.stanceLimit.reckless" value="{{data.state.stanceLimit.reckless}}">
+        </div>
+        <div id="divisor">
+          /
+        </div>
+        <div id="state-max">
+          <input class="state-value" style="color: green;" type="text" name="data.state.stanceLimit.conservative" value="{{data.state.stanceLimit.conservative}}" >
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="wounds row-section">
     <div class="state-section">
       <span class="top label">Wounds</span> 
@@ -204,27 +222,6 @@
           <input class="readonly-toggle" toggle-type="stress" name="data.state.stress.max" type="text" value="{{data.state.stress.max}}" >
           {{else}}
           <a class="readonly-toggle" toggle-type="stress">{{actor.data.state.stress.max}}</a>
-          {{/if}}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="shame row-section">
-    <div class="state-section">
-      <span class="top label">Shame</span> 
-      <div class="state-value-box">
-        <div id="value">
-          <input class="state-value" type="text" name="data.state.shame.value" value="{{data.state.shame.value}}">
-        </div>
-        <div id="divisor">
-          /
-        </div>
-        <div id="state-max">
-          {{#if actor.flags.shame}}
-          <input class="readonly-toggle" toggle-type="shame" name="data.state.shame.max" type="text" value="{{data.state.shame.max}}" >
-          {{else}}
-          <a class="readonly-toggle" toggle-type="shame">{{actor.data.state.shame.max}}</a>
           {{/if}}
         </div>
       </div>

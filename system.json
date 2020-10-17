@@ -52,133 +52,6 @@
   ],
   "styles": ["./css/wfrp3.css"],
   "packs": [
-  	{
-      "name": "bestiary",
-      "label": "Bestiary",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/bestiary.db",
-      "entity": "Actor",
-      "tag" : "actor"
-    },
-    {
-      "name": "careers",
-      "label": "Careers",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/careers.db",
-      "entity": "Item",
-      "tag" : "career"
-    },
-    {
-      "name": "criticals",
-      "label": "Criticals",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/criticals.db",
-      "entity": "Item",
-      "tag" : "critical"
-
-    },
-  	 {
-      "name": "skills",
-      "label": "Skills",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/skills.db",
-      "entity": "Item",
-      "tag" : "skill"
-    },
-    {
-      "name": "talents",
-      "label": "Talents",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/talents.db",
-      "entity": "Item",
-      "tag" : "talent"
-    },
-    {
-      "name": "cards",
-      "label": "Cards",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/cards.db",
-      "entity": "Item",
-      "tag" : "card"
-    },
-    {
-      "name": "traits",
-      "label": "Traits",
-      "system": "wfrp3",
-      "module": "wfrp3",
-      "path": "./packs/traits.db",
-      "entity": "Item",
-      "tag" : "trait"
-    },
-    {
-      "name": "psychologies",
-      "label": "Psychologies",
-      "path": "./packs/psychologies.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "pyschology"
-    },
-    {
-      "name": "mutations",
-      "label": "Mutations",
-      "path": "./packs/mutations.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "mutation"
-    },
-    {
-      "name": "injuries",
-      "label": "Injuries",
-      "path": "./packs/injuries.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "injury"
-    },
-    {
-      "name": "diseases",
-      "label": "Diseases",
-      "path": "./packs/diseases.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "disease"
-    },
-    {
-      "name": "spells",
-      "label": "Spells",
-      "path": "./packs/spells.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "spell"
-    },
-	{
-      "name": "prayers",
-      "label": "Prayers",
-      "path": "./packs/prayers.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "prayer"
-    },
-    {
-      "name": "trappings",
-      "label": "Trappings",
-      "path": "./packs/trappings.db",
-      "entity": "Item",
-      "module": "wfrp3",
-      "system": "wfrp3",
-      "tag" : "trapping"
-    }
   ],
   "languages": [
     {
@@ -196,7 +69,7 @@
   "compatibleCoreVersion" : "0.6.0",
   "templateVersion":2,
   "socket": true,
-  "manifest" :  "https://raw.githubusercontent.com/CatoThe1stElder/WFRP-4th-Edition-FoundryVTT/stable/system.json",
-  "download" :  "https://github.com/CatoThe1stElder/WFRP-4th-Edition-FoundryVTT/archive/stable.zip",
-  "url" : "https://github.com/CatoThe1stElder/WFRP-4th-Edition-FoundryVTT"
+  "manifest" :  "",
+  "download" :  "",
+  "url" : ""
 }

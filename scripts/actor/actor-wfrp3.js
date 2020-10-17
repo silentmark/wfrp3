@@ -13,17 +13,17 @@ class Actorwfrp3 extends Actor {
 
     // Default auto calculation to true
     data.flags = { };
-    let moneyItems = await WFRP_Utility.allMoneyItems()
-    moneyItems = moneyItems.sort((a, b) => (a.data.coinValue.value > b.data.coinValue.value) ? -1 : 1);
+    //let moneyItems = await WFRP_Utility.allMoneyItems()
+    //moneyItems = moneyItems.sort((a, b) => (a.data.coinValue.value > b.data.coinValue.value) ? -1 : 1);
 
     // If character, automatically add basic skills and money items
     if (data.type == "character")
     {
-      for (let m of moneyItems)   // Add money items, with a quantity of 0
-      {
-        m.data.quantity.value = 0;
-        data.items.push(m);
-      }
+      //for (let m of moneyItems)   // Add money items, with a quantity of 0
+      //{
+      //  m.data.quantity.value = 0;
+      //  data.items.push(m);
+      //}
       super.create(data, options); // Follow through the the rest of the Actor creation process upstream
     }
   }
@@ -1090,16 +1090,6 @@ class Actorwfrp3 extends Actor {
         // Keep a running total of the coin value the actor has outside of containers
         else if (i.type === "money") 
         {
-          i.encumbrance = (i.data.encumbrance.value * i.data.quantity.value).toFixed(2);
-          if (i.data.container.value == "0")
-          {
-            money.coins.push(i);
-            totalEnc += Number(i.encumbrance);
-          } 
-          else 
-          {
-            inContainers.push(i);
-          }
           money.total += i.data.quantity.value * i.data.coinValue.value;
         }
       } 
@@ -1179,40 +1169,40 @@ class Actorwfrp3 extends Actor {
     }
 
     // Penalties flag is teh string that shows when the actor's turn in combat starts
-    let penaltiesFlag = penalties[game.i18n.localize("Mutation")].value + " " + penalties[game.i18n.localize("Injury")].value + " " + penalties[game.i18n.localize("Criticals")].value + " " + this.data.data.status.penalties.value
-    penaltiesFlag = penaltiesFlag.trim();
+    // let penaltiesFlag = penalties[game.i18n.localize("Mutation")].value + " " + penalties[game.i18n.localize("Injury")].value + " " + penalties[game.i18n.localize("Criticals")].value + " " + this.data.data.status.penalties.value
+    // penaltiesFlag = penaltiesFlag.trim();
 
-    // This is for the penalty string in flags, for combat turn message
-    if (this.data.flags.modifier != penaltiesFlag)
-      this.update({"flags.modifier": penaltiesFlag})
+    // // This is for the penalty string in flags, for combat turn message
+    // if (this.data.flags.modifier != penaltiesFlag)
+    //   this.update({"flags.modifier": penaltiesFlag})
 
-    // enc used for encumbrance bar in trappings tab
-    let enc;
-    totalEnc = Math.floor(totalEnc);
-    enc = {
-      max: actorData.data.status.encumbrance.max,
-      value: Math.round(totalEnc * 10) / 10,
-    };
-    // percentage of the bar filled
-    enc.pct = Math.min(enc.value * 100 / enc.max, 100);
-    enc.state = enc.value / enc.max; // state is how many times over you are max encumbrance
-    if (enc.state > 3) 
-    {
-      enc["maxEncumbered"] = true
-      enc.penalty = wfrp3.encumbrancePenalties["maxEncumbered"];
-    } 
-    else if (enc.state > 2) 
-    {
-      enc["veryEncumbered"] = true
-      enc.penalty = wfrp3.encumbrancePenalties["veryEncumbered"];
-    } 
-    else if (enc.state > 1) 
-    {
-      enc["encumbered"] = true
-      enc.penalty = wfrp3.encumbrancePenalties["encumbered"];
-    } 
-    else
-      enc["notEncumbered"] = true;
+    // // enc used for encumbrance bar in trappings tab
+    // let enc;
+    // totalEnc = Math.floor(totalEnc);
+    // enc = {
+    //   max: actorData.data.status.encumbrance.max,
+    //   value: Math.round(totalEnc * 10) / 10,
+    // };
+    // // percentage of the bar filled
+    // enc.pct = Math.min(enc.value * 100 / enc.max, 100);
+    // enc.state = enc.value / enc.max; // state is how many times over you are max encumbrance
+    // if (enc.state > 3) 
+    // {
+    //   enc["maxEncumbered"] = true
+    //   enc.penalty = wfrp3.encumbrancePenalties["maxEncumbered"];
+    // } 
+    // else if (enc.state > 2) 
+    // {
+    //   enc["veryEncumbered"] = true
+    //   enc.penalty = wfrp3.encumbrancePenalties["veryEncumbered"];
+    // } 
+    // else if (enc.state > 1) 
+    // {
+    //   enc["encumbered"] = true
+    //   enc.penalty = wfrp3.encumbrancePenalties["encumbered"];
+    // } 
+    // else
+    //   enc["notEncumbered"] = true;
 
     // Return all processed objects
     let preparedData = {
@@ -1232,7 +1222,7 @@ class Actorwfrp3 extends Actor {
       psychology: psychology,
       criticals: criticals,
       criticalCount: criticals.length,
-      encumbrance: enc,
+      encumbrance: {},
       ingredients: ingredients
     }
     return preparedData

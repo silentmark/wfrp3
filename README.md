@@ -19,13 +19,7 @@ This is very eraly adaptation of WFRP 4ed system for Foundry VTT by [Moo-man](ht
 - Character Sheet and Talent/Action card items.
 
 ### Thanks
-I also wanted to thank the following for the help in continuing to improve the system with various feature contributions or fixes!
-- JDW  
-- Jagusti  
-- LeRatierBretonnian
-- HerveDarritchon
-- DasSauerkraut
-
+Great thanks to [Moo-man](https://github.com/moo-man/) and [CatoThe1stElder](https://github.com/CatoThe1stElder/), who created WFRP 4ed implementation which was perfect base for this system. Especially due to lack of noticable documentation of Foundry VTT Api  ;-)
 
 ## Modules
 
